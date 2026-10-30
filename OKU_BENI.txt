@@ -1,10 +1,1 @@
-ÖZCAN TARIM iPHONE V2.1 – GİRDİ DEPOSU TESTİ
-
-GitHub deposunda mevcut index.html, app.js, style.css, sw.js, manifest.webmanifest dosyalarını bu paketle değiştirin. Dosyalar kök dizinde olmalı.
-V2.0 IndexedDB kayıtları aynı adla ve yükseltme ile korunur. Yine de GÜNCELLEMEDEN ÖNCE iPhone'da V2.0 JSON yedeği alın ve telefon dışında saklayın.
-
-Yeni: Girdi tanımlama, stok alışı, parselde girdi kullanımı, stoktan düşme ve gider işlemini tek veritabanı işleminde kaydetme, negatif stok engeli, V2.0/V2.1 JSON içe aktarma, V2.1 yedek dışa aktarma.
-
-SINIRLAR: TEST PROTOTİPİDİR. Maliyet yöntemi AĞIRLIKLI ORTALAMA, FIFO DEĞİL. Farklı tarihlerdeki geçmiş kayıtların maliyetini yeniden hesaplamaz. Stok giriş/çıkış ve manuel gider aynı işlem için ayrı ayrı girilmemelidir. Çoklu cihaz eşitleme, gerçek işletme verisi ve ticari kullanım için uygun değildir. Yedek geri yükleme mevcut tüm test verisini değiştirir.
-
-Önerilen test: önce yedek, sonra 100 kg gübre x 20 TL al, 25 kg kullan; kalan 75 kg ve 500 TL gideri kontrol et. Uçak modunda test et ve JSON yedeği al.
+Özcan Tarım Mobil V3.0 BETA - genişletilmiş test paketi. Tam bilgisayar eşdeğeri DEĞİLDİR. Mevcut V2.1 veritabanı korunur, yeni tablolar eklenir. Önce V2.1 JSON yedeğini alın. Gerçek veriler için kullanmayın. Hasat, satış, icar, ödeme, destek, bakım, hizmet ve basit sezon raporu eklenmiştir. Detaylı bilgisayar raporları, mahsup, balya, tam FIFO tarihsel düzeltme ve SQLite aktarımı henüz tamamlanmadı.
