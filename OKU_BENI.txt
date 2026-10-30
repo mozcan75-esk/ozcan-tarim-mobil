@@ -1,0 +1,15 @@
+ÖZCAN TARIM MOBİL V2.0 - İLK ÇEVRİMDIŞI PROTOTİP
+
+Bu paket üretim sürümü DEĞİLDİR. Mevcut Flask/SQLite veritabanıyla senkronize olmaz.
+Sadece parsel ekleme, temel işlem ekleme, listeleme ve JSON test yedeği/geri yükleme çalışması içerir.
+FIFO, gerçek stok hareketleri, hasat, satış, icar, destek ve mali raporlar aktarılmamıştır.
+
+iPhone'da yüklemek için dosyalar HTTPS üzerinden statik bir web adresinde sunulmalıdır.
+Ücretsiz statik barındırma mümkündür; ancak bu aşamada dosyalar henüz internete yüklenmemiştir.
+Safari'de adresi açıp Paylaş > Ana Ekrana Ekle yapın. İlk yüklemede internet gerekir.
+Çevrimdışı kullanım için uygulamanın en az bir kez internet açıkken tamamen açılması gerekir.
+IndexedDB verileri cihazda saklanır, ancak silinme riski vardır. Düzenli JSON yedeği alın.
+Bu test sürümünde kimlik doğrulama yoktur: gerçek veya hassas kayıtları girmeyin.
+
+Bilgisayarda geliştirme testi: bu klasörde `python -m http.server 8000` çalıştırıp
+http://localhost:8000 açabilirsiniz (service worker yalnız HTTPS'te kaydolur).
