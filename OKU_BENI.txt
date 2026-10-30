@@ -1,15 +1,10 @@
-ÖZCAN TARIM MOBİL V2.0 - İLK ÇEVRİMDIŞI PROTOTİP
+ÖZCAN TARIM iPHONE V2.1 – GİRDİ DEPOSU TESTİ
 
-Bu paket üretim sürümü DEĞİLDİR. Mevcut Flask/SQLite veritabanıyla senkronize olmaz.
-Sadece parsel ekleme, temel işlem ekleme, listeleme ve JSON test yedeği/geri yükleme çalışması içerir.
-FIFO, gerçek stok hareketleri, hasat, satış, icar, destek ve mali raporlar aktarılmamıştır.
+GitHub deposunda mevcut index.html, app.js, style.css, sw.js, manifest.webmanifest dosyalarını bu paketle değiştirin. Dosyalar kök dizinde olmalı.
+V2.0 IndexedDB kayıtları aynı adla ve yükseltme ile korunur. Yine de GÜNCELLEMEDEN ÖNCE iPhone'da V2.0 JSON yedeği alın ve telefon dışında saklayın.
 
-iPhone'da yüklemek için dosyalar HTTPS üzerinden statik bir web adresinde sunulmalıdır.
-Ücretsiz statik barındırma mümkündür; ancak bu aşamada dosyalar henüz internete yüklenmemiştir.
-Safari'de adresi açıp Paylaş > Ana Ekrana Ekle yapın. İlk yüklemede internet gerekir.
-Çevrimdışı kullanım için uygulamanın en az bir kez internet açıkken tamamen açılması gerekir.
-IndexedDB verileri cihazda saklanır, ancak silinme riski vardır. Düzenli JSON yedeği alın.
-Bu test sürümünde kimlik doğrulama yoktur: gerçek veya hassas kayıtları girmeyin.
+Yeni: Girdi tanımlama, stok alışı, parselde girdi kullanımı, stoktan düşme ve gider işlemini tek veritabanı işleminde kaydetme, negatif stok engeli, V2.0/V2.1 JSON içe aktarma, V2.1 yedek dışa aktarma.
 
-Bilgisayarda geliştirme testi: bu klasörde `python -m http.server 8000` çalıştırıp
-http://localhost:8000 açabilirsiniz (service worker yalnız HTTPS'te kaydolur).
+SINIRLAR: TEST PROTOTİPİDİR. Maliyet yöntemi AĞIRLIKLI ORTALAMA, FIFO DEĞİL. Farklı tarihlerdeki geçmiş kayıtların maliyetini yeniden hesaplamaz. Stok giriş/çıkış ve manuel gider aynı işlem için ayrı ayrı girilmemelidir. Çoklu cihaz eşitleme, gerçek işletme verisi ve ticari kullanım için uygun değildir. Yedek geri yükleme mevcut tüm test verisini değiştirir.
+
+Önerilen test: önce yedek, sonra 100 kg gübre x 20 TL al, 25 kg kullan; kalan 75 kg ve 500 TL gideri kontrol et. Uçak modunda test et ve JSON yedeği al.
