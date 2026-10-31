@@ -1,1 +1,1 @@
-V3.0.3: Kaynak SQLite operations ve mobildeki pc-op kayıtları sezon bazında mutabakat edilir. Gider kategorileri ve parsel bazında kaynak maliyet/da gösterilir. Destek, bakım ve icar tutarları ikinci kez eklenmez. Yalnızca rapor ekranı değişir; veriler silinmez veya değiştirilmez. Tam FIFO ve net kâr eşitliği henüz doğrulanmadı.
+V3.0.4 — Salt okunur FIFO ve ayrı gider mutabakatı. Bilgisayar hesaplarıyla tam eşitlik henüz doğrulanmadı. JSON verisini tekrar içe aktarmayın.

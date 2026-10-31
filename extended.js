@@ -3,7 +3,7 @@ const number=x=>Number(x||0), uid=()=>crypto.randomUUID();
 const escapeText=x=>String(x??'');
 const extraForms=[['harvestForm','harvests'],['saleForm','sales'],['rentForm','rents'],['rentPaymentForm','rentPayments'],['supportForm','supports'],['maintenanceForm','maintenance'],['serviceForm','services']];
 async function renderExtended(){
- const [parcels,harvests,sales,rents,payments,supports,maintenance,services,ops]=await Promise.all(['parcels','harvests','sales','rents','rentPayments','supports','maintenance','services','operations'].map(all));
+ const [parcels,harvests,sales,rents,payments,supports,maintenance,services,ops,moves,inputs]=await Promise.all(['parcels','harvests','sales','rents','rentPayments','supports','maintenance','services','operations','stockMoves','inputs'].map(all));
  for(const sel of document.querySelectorAll('.extraParcel')){const val=sel.value;sel.replaceChildren();for(const x of parcels)sel.add(new Option(`${x.name} (${x.code})`,x.code));sel.value=val||sel.options[0]?.value||''}
  const crops=[...new Set(harvests.map(x=>x.crop))].sort(),sel=$('cropSelect'),old=sel.value;sel.replaceChildren();for(const crop of crops)sel.add(new Option(crop,crop));sel.value=old||sel.options[0]?.value||'';
  $('cropList').replaceChildren();for(const crop of crops){const total=harvests.filter(x=>x.crop===crop).reduce((n,x)=>n+number(x.quantity),0)-sales.filter(x=>x.crop===crop).reduce((n,x)=>n+number(x.quantity),0);item($('cropList'),`${crop}: ${total.toLocaleString('tr-TR')} kg stok`)}
@@ -43,7 +43,34 @@ async function renderExtended(){
    const sourceMaintenance=source.filter(x=>x.table==='machine_maintenance').map(x=>x.record).filter(x=>x.season===season&&!Number(x.is_cancelled));
    const sourceRents=source.filter(x=>x.table==='rent_contracts').map(x=>x.record).filter(x=>x.season===season&&!Number(x.is_cancelled));
    item($('analysisList'),`Ayrı kayıtlar (işlem toplamına EKLENMEDİ): ${sourceSupports.length} destek, ${sourceMaintenance.length} bakım, ${sourceRents.length} icar sözleşmesi.`);
-   item($('analysisList'),'ÖNEMLİ: Bu rapor kaynak işlemleri karşılaştırır; stok alışları ikinci kez gider yazılmaz. Kesin net kâr, tam FIFO ve tahakkuk/ödeme mutabakatı henüz doğrulanmadı.');
+   // Salt okunur FIFO mutabakatı: kaynak stok hareketlerinin kendi tarih ve alış sırasına göre hesaplanır.
+   const byInput=new Map();for(const m of moves.filter(m=>String(m.id).startsWith('pc-'))){if(!byInput.has(m.input_id))byInput.set(m.input_id,[]);byInput.get(m.input_id).push(m)}
+   let fifoUseCost=0, recordedUseCost=0, matched=0, mismatch=0, missing=0, negative=0;
+   for(const [inputId,entries] of byInput){
+     const lots=[];
+     const sorted=[...entries].sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))||(a.kind==='purchase'?-1:1)-(b.kind==='purchase'?-1:1)||Number(a.source_id||0)-Number(b.source_id||0)||String(a.id).localeCompare(String(b.id)));
+     for(const m of sorted){
+       if(m.kind==='purchase'){lots.push({left:number(m.quantity),price:number(m.unit_price)});continue}
+       if(m.kind!=='use'||m.season!==season)continue;
+       let q=number(m.quantity),cost=0;
+       for(const lot of lots){const taken=Math.max(0,Math.min(q,lot.left));lot.left-=taken;q-=taken;cost+=taken*lot.price;if(q<1e-8)break}
+       if(q>1e-6){missing++;continue}
+       fifoUseCost+=cost;recordedUseCost+=number(m.total);matched++;
+       if(Math.abs(cost-number(m.total))>0.02)mismatch++;
+     }
+   }
+   item($('analysisList'),`FIFO kaynak hareket kontrolü: ${matched} kullanım hesaplandı · ${missing} yetersiz/tarihi uyumsuz kullanım · ${mismatch} maliyet farkı`);
+   item($('analysisList'),`FIFO hesaplanan kullanım maliyeti: ${money(fifoUseCost)} ₺ · aktarılan kullanım tutarı: ${money(recordedUseCost)} ₺ (yalnızca hesaplanabilen hareketler)`);
+   item($('analysisList'),'UYARI: FIFO hareket maliyetleri işlem giderlerine ayrıca EKLENMEDİ. Stok hareketleri ile işlemler arasındaki birebir bağ ve bilgisayar FIFO kuralı doğrulanmadan kesin kâr hesaplanamaz.');
+   const income=sourceOps.filter(x=>x.direction==='Gelir').reduce((n,x)=>n+number(x.amount),0);
+   const expenses=sourceOps.filter(x=>x.direction==='Gider').reduce((n,x)=>n+number(x.amount),0);
+   const salesTotal=sales.filter(x=>x.season===season).reduce((n,x)=>n+number(x.total),0);
+   const supportsTotal=supports.filter(x=>x.season===season&&!number(x.is_cancelled)).reduce((n,x)=>n+number(x.amount),0);
+   const rentTotal=rents.filter(x=>x.season===season&&!number(x.is_cancelled)).reduce((n,x)=>n+number(x.total_amount),0);
+   const maintenanceTotal=maintenance.filter(x=>x.season===season&&!number(x.is_cancelled)).reduce((n,x)=>n+number(x.cost),0);
+   item($('analysisList'),`Ayrı kayıt kontrolü (işlem toplamına eklenmedi): satış ${money(salesTotal)} ₺ · destek ${money(supportsTotal)} ₺ · icar sözleşme bedeli ${money(rentTotal)} ₺ · bakım ${money(maintenanceTotal)} ₺`);
+   item($('analysisList'),`Kaynak işlem bakiyesi (KESİN KÂR DEĞİL): ${money(income-expenses)} ₺. İcar tahakkuku, destek ve bakımın hangi gider/gelire dahil olduğu doğrulanmadan net kâr hesaplanmaz.`);
+   item($('analysisList'),'ÖNEMLİ: Bu ekran salt okunur mutabakat raporudur. Bilgisayar veritabanını ve telefon kayıtlarını değiştirmez.');
  }
 
 }
