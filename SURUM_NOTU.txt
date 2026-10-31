@@ -1,4 +1,1 @@
-V3.0.4.1 - iPhone ana ekran PWA güncelleme düzeltmesi.
-Service Worker: çevrimiçi sayfa için ağ öncelikli, çevrimdışı önbellek yedeği.
-Yeni worker etkinleşince tek seferlik sayfa yenileme.
-IndexedDB verileri ve kayıtları silinmez.
+V3.0.5: Eski giderler değiştirilmez. FIFO farkları girdi bazında raporlanır. Geçmiş tarihli yeni stok kullanımı, daha sonraki tüketim varsa engellenir. IndexedDB silinmez.

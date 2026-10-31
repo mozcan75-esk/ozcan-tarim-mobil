@@ -1,6 +1,1 @@
-1. iPhone uygulamasından JSON yedek alın ve telefon dışında saklayın.
-2. Bu ZIP içindeki index.html, app.js, extended.js, style.css, sw.js ve manifest.webmanifest dosyalarını GitHub depo KOK dizinine yükleyin.
-3. Commit changes yapın, GitHub Pages yayını tamamlanınca Safari ile index.html?v=3041 adresini açın.
-4. Ana ekran uygulamasını internet açıkken açın; gerekirse iki kez kapatıp açın.
-5. Uygulamayı silmeyin, site verilerini temizlemeyin, JSON dosyasını GitHub'a yüklemeyin.
-Not: Önceki worker eski index.html sayfasını önbellekten sunduğundan, Safari'de yeni sürüm görünürken ana ekranda eski sürüm kalabilir. Yeni worker'ın kurulması için ana ekran uygulamasının çevrimiçi açılması gerekir.
+1. iPhone uygulamasından JSON yedeği alın. 2. ZIP içindeki index.html, app.js, extended.js, sw.js, style.css ve manifest.webmanifest dosyalarını GitHub deposunun köküne yükleyin. 3. Commit yapın, Pages yayımlanınca Safari ve ana ekran uygulamasını açın. 4. Rapor/Analiz 2026/2027 kontrol edin. Gerçek JSON dosyasını GitHub'a yüklemeyin. Uygulamayı silmeyin.

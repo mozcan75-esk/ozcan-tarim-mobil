@@ -45,7 +45,7 @@ async function renderExtended(){
    item($('analysisList'),`Ayrı kayıtlar (işlem toplamına EKLENMEDİ): ${sourceSupports.length} destek, ${sourceMaintenance.length} bakım, ${sourceRents.length} icar sözleşmesi.`);
    // Salt okunur FIFO mutabakatı: kaynak stok hareketlerinin kendi tarih ve alış sırasına göre hesaplanır.
    const byInput=new Map();for(const m of moves.filter(m=>String(m.id).startsWith('pc-'))){if(!byInput.has(m.input_id))byInput.set(m.input_id,[]);byInput.get(m.input_id).push(m)}
-   let fifoUseCost=0, recordedUseCost=0, matched=0, mismatch=0, missing=0, negative=0;
+   let fifoUseCost=0, recordedUseCost=0, matched=0, mismatch=0, missing=0;const fifoByInput=new Map();
    for(const [inputId,entries] of byInput){
      const lots=[];
      const sorted=[...entries].sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))||(a.kind==='purchase'?-1:1)-(b.kind==='purchase'?-1:1)||Number(a.source_id||0)-Number(b.source_id||0)||String(a.id).localeCompare(String(b.id)));
@@ -57,10 +57,14 @@ async function renderExtended(){
        if(q>1e-6){missing++;continue}
        fifoUseCost+=cost;recordedUseCost+=number(m.total);matched++;
        if(Math.abs(cost-number(m.total))>0.02)mismatch++;
+       const k=String(inputId),stat=fifoByInput.get(k)||{count:0,diffCount:0,recorded:0,recomputed:0};stat.count++;stat.recorded+=number(m.total);stat.recomputed+=cost;if(Math.abs(cost-number(m.total))>0.02)stat.diffCount++;fifoByInput.set(k,stat);
      }
    }
    item($('analysisList'),`FIFO kaynak hareket kontrolü: ${matched} kullanım hesaplandı · ${missing} yetersiz/tarihi uyumsuz kullanım · ${mismatch} maliyet farkı`);
    item($('analysisList'),`FIFO hesaplanan kullanım maliyeti: ${money(fifoUseCost)} ₺ · aktarılan kullanım tutarı: ${money(recordedUseCost)} ₺ (yalnızca hesaplanabilen hareketler)`);
+   item($('analysisList'),`V3.0.5 · FIFO denetim farkı: ${money(fifoUseCost-recordedUseCost)} ₺. Bu fark geçmiş işlem giderlerine EKLENMEZ; kayıtlı maliyet korunur.`);
+   for(const [inputId,stat] of fifoByInput){const input=inputs.find(x=>String(x.id)===inputId);item($('analysisList'),`${input?.name||inputId}: ${stat.count} kullanım · ${stat.diffCount} farklı · kayıtlı ${money(stat.recorded)} ₺ · yeniden FIFO ${money(stat.recomputed)} ₺ · fark ${money(stat.recomputed-stat.recorded)} ₺`)}
+   item($('analysisList'),'Bilgisayar FIFO kuralı: alışlar tarih ve kayıt ID sırasıyla, tüketimler tarih ve kayıt ID sırasıyla işlenir. Geçmiş tutarlar salt okunur korunur. Yeni tarihli kullanımlar yalnızca mevcut alımlardan hesaplanır.');
    item($('analysisList'),'UYARI: FIFO hareket maliyetleri işlem giderlerine ayrıca EKLENMEDİ. Stok hareketleri ile işlemler arasındaki birebir bağ ve bilgisayar FIFO kuralı doğrulanmadan kesin kâr hesaplanamaz.');
    const income=sourceOps.filter(x=>x.direction==='Gelir').reduce((n,x)=>n+number(x.amount),0);
    const expenses=sourceOps.filter(x=>x.direction==='Gider').reduce((n,x)=>n+number(x.amount),0);
