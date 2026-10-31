@@ -72,6 +72,76 @@ async function renderExtended(){
      const harvested=seasonHarvest.reduce((n,x)=>n+number(x.quantity),0),sold=seasonSales.reduce((n,x)=>n+number(x.quantity),0),revenue=seasonSales.reduce((n,x)=>n+number(x.total),0);
      const crop=document.createElement('p');crop.textContent=`Hasat: ${harvested.toLocaleString('tr-TR')} kg · Satış: ${sold.toLocaleString('tr-TR')} kg · Satış tutarı: ${money(revenue)} ₺. Satış kaydında parsel bağı bulunmadığı için gelir parsele dağıtılmaz; ürün stoku küresel olarak izlenir.`;profitability.append(crop);
    }
+
+   // V3.0.7: salt-okunur icar tahakkuku, açık borç ve arpa tohum desteği dağıtımı.
+   const p307=document.getElementById('parcelProfitability');
+   if(p307){
+     const block=document.createElement('section');
+     const title=document.createElement('h3');title.textContent='V3.0.7 · İcar, borç ve arpa tohum desteği';block.append(title);
+     const note=document.createElement('p');
+     note.textContent='Bu tablo denetim amaçlıdır. Kaynak işlem giderleri değiştirilmez. Destek yalnızca arpa ekim alanına göre dağıtılır; destek sonrası maliyet bir gösterge olup destek ayrıca ikinci kez gelir yazılmaz.';
+     block.append(note);
+     const activeRents=rents.filter(x=>x.season===season&&!number(x.is_cancelled));
+     const activeSupports=supports.filter(x=>x.season===season&&!number(x.is_cancelled));
+     const rentByParcel=new Map(), paidByParcel=new Map(), duplicates=new Map();
+     for(const r of activeRents){
+       const code=String(r.parcel_code||'');
+       rentByParcel.set(code,(rentByParcel.get(code)||0)+number(r.total_amount));
+       const paid=payments.filter(x=>x.rent_id===r.id&&!number(x.is_cancelled)).reduce((n,x)=>n+number(x.amount),0);
+       paidByParcel.set(code,(paidByParcel.get(code)||0)+paid);
+     }
+     // Aynı gider işlemler tablosunda varsa ikinci kez tahakkuk ettirme.
+     for(const op of sourceOps.filter(x=>x.direction==='Gider')){
+       if(/icar|kira/i.test([op.category,op.op_type,op.item].join(' '))){
+         const code=String(op.parcel_code||'');
+         duplicates.set(code,(duplicates.get(code)||0)+number(op.amount));
+       }
+     }
+     const barleyArea=new Map();
+     for(const op of sourceOps.filter(x=>x.direction==='Gider')){
+       if(!/arpa/i.test(String(op.item||''))||!/tohum/i.test(String(op.category||'')))continue;
+       const code=String(op.parcel_code||'');
+       const sowing=selectedActivities.filter(x=>x.parcel_code===code&&/ekim/i.test(String(x.activity_type||'')));
+       const a=sowing.length?Math.max(...sowing.map(x=>number(x.area_da))):0;
+       if(a>0)barleyArea.set(code,a);
+     }
+     const totalBarleyArea=[...barleyArea.values()].reduce((n,x)=>n+x,0);
+     const barleySupports=activeSupports.filter(x=>/arpa/i.test([x.crop,x.description,x.support_type].join(' '))&&/tohum/i.test([x.description,x.support_type].join(' ')));
+     const supportAmount=barleySupports.reduce((n,x)=>n+number(x.amount),0);
+     const sourceCosts=new Map();
+     for(const op of sourceOps.filter(x=>x.direction==='Gider'&&x.parcel_code)){
+       const code=String(op.parcel_code);sourceCosts.set(code,(sourceCosts.get(code)||0)+number(op.amount));
+     }
+     const codes=[...new Set([...sourceCosts.keys(),...rentByParcel.keys(),...barleyArea.keys()])].sort();
+     const table=document.createElement('table');table.className='profit-table';
+     const head=document.createElement('tr');
+     for(const name of ['Parsel','Arpa ekim (da)','Kayıtlı gider (₺)','İcar tahakkuku (₺)','İcar ödenen (₺)','Açık borç (₺)','Destek payı (₺)','Destek sonrası maliyet (₺)']){
+       const th=document.createElement('th');th.textContent=name;head.append(th);
+     }table.append(head);
+     let allocated=0,rentAddition=0,openDebt=0,duplicated=0;
+     for(let i=0;i<codes.length;i++){
+       const code=codes[i], base=sourceCosts.get(code)||0, rent=rentByParcel.get(code)||0;
+       const already=Math.min(rent,duplicates.get(code)||0);
+       const addition=Math.max(0,rent-already);
+       const paid=paidByParcel.get(code)||0;
+       const debt=Math.max(0,rent-paid);
+       const lastBarley=[...barleyArea.keys()].sort().at(-1);const support=totalBarleyArea>0&&barleyArea.has(code)?(code===lastBarley?Math.round((supportAmount-allocated)*100)/100:Math.round(supportAmount*(barleyArea.get(code)||0)/totalBarleyArea*100)/100):0;
+       allocated+=support;rentAddition+=addition;openDebt+=debt;duplicated+=already;
+       const row=document.createElement('tr');
+       const values=[code,barleyArea.has(code)?number(barleyArea.get(code)).toLocaleString('tr-TR',{maximumFractionDigits:3}):'—',money(base),money(addition),money(paid),money(debt),money(support),money(base+addition-support)];
+       for(const v of values){const td=document.createElement('td');td.textContent=v;row.append(td)}table.append(row);
+     }
+     // Kuruş yuvarlama farkı raporda görülebilir; hiçbir kayıt değiştirilmez.
+     const wrap=document.createElement('div');wrap.className='profit-scroll';wrap.append(table);block.append(wrap);
+     const summary=document.createElement('p');
+     summary.textContent=`Kayıtlı işlem gideri: ${money(pcExpense)} ₺ · İcar tahakkuk ilavesi: ${money(rentAddition)} ₺ · Açık icar borcu: ${money(openDebt)} ₺ · Arpa ekim alanı: ${totalBarleyArea.toLocaleString('tr-TR',{maximumFractionDigits:3})} da · Dağıtılan destek: ${money(allocated)} ₺ / ${money(supportAmount)} ₺ · Destek sonrası maliyet: ${money(pcExpense+rentAddition-allocated)} ₺.`;
+     block.append(summary);
+     const warning=document.createElement('p');
+     warning.textContent=`İcar için işlemlerde bulunan olası mükerrer gider: ${money(duplicated)} ₺. İcar ödemesi gideri tekrar artırmaz. Bakım giderleri henüz dağıtılmadı. Destek tutarı yalnızca arpa tohumu desteği olarak tanımlanan kayıtlardan alınır.`;
+     block.append(warning);
+     if(supportAmount>0&&!totalBarleyArea){const w=document.createElement('p');w.textContent='UYARI: Arpa ekim alanı doğrulanamadığı için destek dağıtılmadı.';block.append(w)}
+     p307.append(block);
+   }
    const sourceSupports=source.filter(x=>x.table==='supports').map(x=>x.record).filter(x=>x.season===season&&!Number(x.is_cancelled));
    const sourceMaintenance=source.filter(x=>x.table==='machine_maintenance').map(x=>x.record).filter(x=>x.season===season&&!Number(x.is_cancelled));
    const sourceRents=source.filter(x=>x.table==='rent_contracts').map(x=>x.record).filter(x=>x.season===season&&!Number(x.is_cancelled));
