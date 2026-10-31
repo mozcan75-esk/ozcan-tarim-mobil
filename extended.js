@@ -24,11 +24,26 @@ async function renderExtended(){
    item($('analysisList'),`Ayrı işlenen alan kaydı: ${selectedAreas.length} parsel`);
    for(const a of selectedAreas.sort((a,b)=>a.parcel_code.localeCompare(b.parcel_code)))
      item($('analysisList'),`${a.parcel_code}: işlenen ${number(a.worked_area_da).toLocaleString('tr-TR')} da · icar ${number(a.leased_area_da).toLocaleString('tr-TR')} da`);
-   const incomes=ops.filter(x=>filter(x)&&x.direction==='Gelir').reduce((n,x)=>n+number(x.amount),0);
-   const expenses=ops.filter(x=>filter(x)&&x.direction==='Gider').reduce((n,x)=>n+number(x.amount),0);
-   item($('analysisList'),`İşlemler tablosundaki gelir: ${money(incomes)} ₺ (ayrı modüller eklenmedi)`);
-   item($('analysisList'),`İşlemler tablosundaki gider: ${money(expenses)} ₺ (ayrı modüller eklenmedi)`);
-   item($('analysisList'),'DİKKAT: Bu tutarlar kesin sezon kârı değildir. İcar, destek, bakım ve stok maliyetleriyle çift sayım kontrolü tamamlanmadı.');
+     // Salt okunur mutabakat: bilgisayardan gelen özgün kayıtlar esas alınır.
+   const sourceOps=source.filter(x=>x.table==='operations').map(x=>x.record).filter(x=>!Number(x.is_cancelled)&&x.season===season);
+   const mobileOps=ops.filter(x=>x.season===season);
+   const sum=(rows,dir)=>rows.filter(x=>x.direction===dir).reduce((n,x)=>n+number(x.amount),0);
+   const pcIncome=sum(sourceOps,'Gelir'),pcExpense=sum(sourceOps,'Gider');
+   const mobileImported=mobileOps.filter(x=>String(x.id).startsWith('pc-op-'));
+   const importedIncome=sum(mobileImported,'Gelir'),importedExpense=sum(mobileImported,'Gider');
+   const equal=(a,b)=>Math.abs(a-b)<0.011;
+   item($('analysisList'),`Bilgisayar kaynak işlemleri: ${sourceOps.length} kayıt · Gelir ${money(pcIncome)} ₺ · Gider ${money(pcExpense)} ₺`);
+   item($('analysisList'),`Mobilde korunan kaynak işlemler: ${mobileImported.length} kayıt · Gelir ${money(importedIncome)} ₺ · Gider ${money(importedExpense)} ₺`);
+   item($('analysisList'),`Kaynak işlem mutabakatı: ${sourceOps.length===mobileImported.length&&equal(pcIncome,importedIncome)&&equal(pcExpense,importedExpense)?'UYUMLU':'FARK VAR — mobil kaynak işlemlerini kontrol edin'}`);
+   const cats=[...new Set(sourceOps.filter(x=>x.direction==='Gider').map(x=>x.category||'Diğer'))].sort();
+   for(const cat of cats){const rows=sourceOps.filter(x=>x.direction==='Gider'&&(x.category||'Diğer')===cat);item($('analysisList'),`${cat}: ${rows.length} kayıt · ${money(rows.reduce((n,x)=>n+number(x.amount),0))} ₺ (bilgisayar kaynak gideri)`)}
+   const parcelCodes=[...new Set(sourceOps.map(x=>x.parcel_code).filter(Boolean))].sort();
+   for(const code of parcelCodes){const pOps=sourceOps.filter(x=>x.parcel_code===code);const cost=sum(pOps,'Gider'),income=sum(pOps,'Gelir');const area=selectedAreas.find(x=>x.parcel_code===code);const parcel=parcels.find(x=>x.code===code);const da=area?number(area.worked_area_da):number(parcel?.area_m2)/1000;item($('analysisList'),`${code}: kaynak gider ${money(cost)} ₺ · kaynak gelir ${money(income)} ₺ · ${da>0?money(cost/da)+' ₺/da':'alan bulunamadı'} (${area?'sezon işlenen alan':'parsel alanı — doğrulanmalı'})`)}
+   const sourceSupports=source.filter(x=>x.table==='supports').map(x=>x.record).filter(x=>x.season===season&&!Number(x.is_cancelled));
+   const sourceMaintenance=source.filter(x=>x.table==='machine_maintenance').map(x=>x.record).filter(x=>x.season===season&&!Number(x.is_cancelled));
+   const sourceRents=source.filter(x=>x.table==='rent_contracts').map(x=>x.record).filter(x=>x.season===season&&!Number(x.is_cancelled));
+   item($('analysisList'),`Ayrı kayıtlar (işlem toplamına EKLENMEDİ): ${sourceSupports.length} destek, ${sourceMaintenance.length} bakım, ${sourceRents.length} icar sözleşmesi.`);
+   item($('analysisList'),'ÖNEMLİ: Bu rapor kaynak işlemleri karşılaştırır; stok alışları ikinci kez gider yazılmaz. Kesin net kâr, tam FIFO ve tahakkuk/ödeme mutabakatı henüz doğrulanmadı.');
  }
 
 }
