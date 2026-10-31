@@ -18,6 +18,7 @@ async function renderExtended(){
  const selectedActivities=activities.filter(filter);
  const selectedAreas=areas.filter(filter);
  $('analysisList').replaceChildren();
+ const profitability=document.getElementById('parcelProfitability');if(profitability)profitability.replaceChildren();
  if(season){
    item($('analysisList'),`Sezon: ${season}`);
    item($('analysisList'),`Bilgisayardan korunan tarla faaliyetleri: ${selectedActivities.length} kayıt`);
@@ -39,6 +40,38 @@ async function renderExtended(){
    for(const cat of cats){const rows=sourceOps.filter(x=>x.direction==='Gider'&&(x.category||'Diğer')===cat);item($('analysisList'),`${cat}: ${rows.length} kayıt · ${money(rows.reduce((n,x)=>n+number(x.amount),0))} ₺ (bilgisayar kaynak gideri)`)}
    const parcelCodes=[...new Set(sourceOps.map(x=>x.parcel_code).filter(Boolean))].sort();
    for(const code of parcelCodes){const pOps=sourceOps.filter(x=>x.parcel_code===code);const cost=sum(pOps,'Gider'),income=sum(pOps,'Gelir');const area=selectedAreas.find(x=>x.parcel_code===code);const parcel=parcels.find(x=>x.code===code);const da=area?number(area.worked_area_da):number(parcel?.area_m2)/1000;item($('analysisList'),`${code}: kaynak gider ${money(cost)} ₺ · kaynak gelir ${money(income)} ₺ · ${da>0?money(cost/da)+' ₺/da':'alan bulunamadı'} (${area?'sezon işlenen alan':'parsel alanı — doğrulanmalı'})`)}
+   // V3.0.6: Salt okunur, işlem giderlerini iki kez saymayan parsel maliyet dökümü.
+   const profitability=document.getElementById('parcelProfitability');
+   if(profitability){
+     profitability.replaceChildren();
+     const heading=document.createElement('h3');heading.textContent='V3.0.6 · Parsel maliyet analizi';profitability.append(heading);
+     const note=document.createElement('p');note.textContent='Yalnızca kayıtlı işlemler üzerinden maliyet analizi. Hasat satış geliri değildir; icar, destek, bakım ve FIFO denetim farkı bu toplamda yer almaz. Kesin net kâr hesaplanmaz.';profitability.append(note);
+     const grouped=new Map();
+     for(const op of sourceOps){if(!op.parcel_code)continue;const code=String(op.parcel_code);if(!grouped.has(code))grouped.set(code,[]);grouped.get(code).push(op)}
+     const tbl=document.createElement('table');tbl.className='profit-table';
+     const header=document.createElement('tr');for(const name of ['Parsel','Alan (da)','Tohum (₺)','Gübre (₺)','Motorin (₺)','Diğer (₺)','Toplam gider (₺)','Gider/da (₺)']){const th=document.createElement('th');th.textContent=name;header.append(th)}tbl.append(header);
+     let totalCost=0, areaSum=0, unknownAreas=0;
+     for(const code of [...grouped.keys()].sort()){
+       const rows=grouped.get(code), parcel=parcels.find(x=>x.code===code), a=selectedAreas.find(x=>x.parcel_code===code);
+       const da=a?number(a.worked_area_da):number(parcel?.area_m2)/1000;
+       if(!(da>0))unknownAreas++;else areaSum+=da;
+       const buckets={seed:0,fertilizer:0,diesel:0,other:0};
+       for(const op of rows.filter(x=>x.direction==='Gider')){
+         const name=String(op.category||'').toLocaleLowerCase('tr-TR');
+         const key=name.includes('tohum')?'seed':name.includes('gübre')?'fertilizer':name.includes('motorin')||name.includes('mazot')?'diesel':'other';buckets[key]+=number(op.amount);
+       }
+       const cost=Object.values(buckets).reduce((a,b)=>a+b,0);totalCost+=cost;
+       const tr=document.createElement('tr');
+       const values=[code,da>0?da.toLocaleString('tr-TR',{maximumFractionDigits:3})+(a?'':'*'):'—',money(buckets.seed),money(buckets.fertilizer),money(buckets.diesel),money(buckets.other),money(cost),da>0?money(cost/da):'—'];
+       for(const v of values){const td=document.createElement('td');td.textContent=v;tr.append(td)}tbl.append(tr);
+     }
+     const scroller=document.createElement('div');scroller.className='profit-scroll';scroller.append(tbl);profitability.append(scroller);
+     const summary=document.createElement('p');summary.textContent=`Parsellere bağlı kayıtlı gider: ${money(totalCost)} ₺ · Kaynak işlem toplamı: ${money(pcExpense)} ₺ · Parselsiz/ayrıştırılmamış fark: ${money(pcExpense-totalCost)} ₺. * Sezon işlenen alan kaydı olmayan parsellerde tapu alanı geçici olarak kullanıldı. ${unknownAreas} parselde alan bulunamadı.`;profitability.append(summary);
+     const extra=document.createElement('p');extra.textContent=`Ayrı izlenen tutarlar: destek ${money(supports.filter(x=>x.season===season&&!number(x.is_cancelled)).reduce((n,x)=>n+number(x.amount),0))} ₺; icar ${money(rents.filter(x=>x.season===season&&!number(x.is_cancelled)).reduce((n,x)=>n+number(x.total_amount),0))} ₺; bakım ${money(maintenance.filter(x=>x.season===season&&!number(x.is_cancelled)).reduce((n,x)=>n+number(x.cost),0))} ₺. Bu tutarlar parsel giderine eklenmedi.`;profitability.append(extra);
+     const seasonHarvest=harvests.filter(x=>x.season===season),seasonSales=sales.filter(x=>x.season===season);
+     const harvested=seasonHarvest.reduce((n,x)=>n+number(x.quantity),0),sold=seasonSales.reduce((n,x)=>n+number(x.quantity),0),revenue=seasonSales.reduce((n,x)=>n+number(x.total),0);
+     const crop=document.createElement('p');crop.textContent=`Hasat: ${harvested.toLocaleString('tr-TR')} kg · Satış: ${sold.toLocaleString('tr-TR')} kg · Satış tutarı: ${money(revenue)} ₺. Satış kaydında parsel bağı bulunmadığı için gelir parsele dağıtılmaz; ürün stoku küresel olarak izlenir.`;profitability.append(crop);
+   }
    const sourceSupports=source.filter(x=>x.table==='supports').map(x=>x.record).filter(x=>x.season===season&&!Number(x.is_cancelled));
    const sourceMaintenance=source.filter(x=>x.table==='machine_maintenance').map(x=>x.record).filter(x=>x.season===season&&!Number(x.is_cancelled));
    const sourceRents=source.filter(x=>x.table==='rent_contracts').map(x=>x.record).filter(x=>x.season===season&&!Number(x.is_cancelled));

@@ -1,6 +1,6 @@
-// V3.0.5: network-first navigation and stale-while-revalidate assets.
-const CACHE = 'ozcan-test-v305';
-const FILES = ['./index.html', './style.css?v=305', './app.js?v=305', './extended.js?v=305', './manifest.webmanifest'];
+// V3.0.6: network-first navigation and stale-while-revalidate assets.
+const CACHE = 'ozcan-test-v306';
+const FILES = ['./index.html', './style.css?v=306', './app.js?v=306', './extended.js?v=306', './manifest.webmanifest'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)).then(() => self.skipWaiting()));
 });

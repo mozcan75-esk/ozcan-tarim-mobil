@@ -1,1 +1,1 @@
-V3.0.5: Eski giderler değiştirilmez. FIFO farkları girdi bazında raporlanır. Geçmiş tarihli yeni stok kullanımı, daha sonraki tüketim varsa engellenir. IndexedDB silinmez.
+V3.0.6: Kaynak işlemlerden parsel bazında tohum, gübre, motorin ve diğer gider dökümü; sezon işlenen alanı önceliği; hasat/satış kontrolü; ayrı kayıtların mükerrer sayılmaması. Kesin kâr hesaplanmaz.
