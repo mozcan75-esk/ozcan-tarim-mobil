@@ -1,7 +1,7 @@
 'use strict';
-const DB='ozcan_tarim_mobile_test', VERSION=3;
+const DB='ozcan_tarim_mobile_test', VERSION=4;
 const $=id=>document.getElementById(id);
-const stores=['parcels','operations','inputs','stockMoves','harvests','sales','rents','rentPayments','supports','maintenance','services','servicePayments','bales','baleSales','soilAnalyses','marketPrices'];
+const stores=['parcels','operations','inputs','stockMoves','harvests','sales','rents','rentPayments','supports','maintenance','services','servicePayments','bales','baleSales','soilAnalyses','marketPrices','sourceRecords'];
 const openDB=()=>new Promise((resolve,reject)=>{const r=indexedDB.open(DB,VERSION);r.onupgradeneeded=()=>{const d=r.result;for(const s of stores)if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:s==='parcels'?'code':'id'});};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
 async function tx(names,mode,fn){const d=await openDB();return new Promise((ok,no)=>{const t=d.transaction(names,mode);let result;try{result=fn(t)}catch(e){t.abort();no(e);return}t.oncomplete=()=>{d.close();ok(result)};t.onerror=()=>{d.close();no(t.error||Error('Veri işlemi başarısız'))};t.onabort=()=>{d.close();no(t.error||Error('İşlem iptal edildi'))}})}
 async function all(s){const d=await openDB();return new Promise((ok,no)=>{const t=d.transaction(s,'readonly'),r=t.objectStore(s).getAll();r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error);t.oncomplete=()=>d.close()})}
