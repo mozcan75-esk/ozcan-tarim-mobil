@@ -27,4 +27,21 @@ $('import').onchange=async e=>{try{const f=e.target.files[0];if(!f)return;const 
 function localDate(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 for(const id of ['operationForm','purchaseForm','useForm'])$(id).elements[id==='operationForm'?'op_date':'date'].value=localDate();
 render().catch(e=>alert('Veri deposu açılamadı: '+e.message));
-if('serviceWorker'in navigator&&location.protocol==='https:')navigator.serviceWorker.register('./sw.js').catch(console.warn);
+// Service worker update: never clear IndexedDB or site data.
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  navigator.serviceWorker.register('./sw.js', {updateViaCache:'none'})
+    .then(reg => {
+      // Check each launch; an updated worker takes control on activation.
+      reg.update().catch(console.warn);
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) reg.update().catch(console.warn);
+      });
+    }).catch(console.warn);
+  let refreshed = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (refreshed) return;
+    refreshed = true;
+    // Reload only once when a new worker takes control; persistent data stays intact.
+    location.reload();
+  });
+}

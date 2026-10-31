@@ -1,1 +1,4 @@
-V3.0.4 — Salt okunur FIFO ve ayrı gider mutabakatı. Bilgisayar hesaplarıyla tam eşitlik henüz doğrulanmadı. JSON verisini tekrar içe aktarmayın.
+V3.0.4.1 - iPhone ana ekran PWA güncelleme düzeltmesi.
+Service Worker: çevrimiçi sayfa için ağ öncelikli, çevrimdışı önbellek yedeği.
+Yeni worker etkinleşince tek seferlik sayfa yenileme.
+IndexedDB verileri ve kayıtları silinmez.
