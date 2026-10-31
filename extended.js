@@ -11,8 +11,26 @@ async function renderExtended(){
  $('supportList').replaceChildren();for(const x of supports)item($('supportList'),`Destek · ${x.season} · ${x.support_type}: ${money(x.amount)} ₺`);for(const x of maintenance)item($('supportList'),`Bakım · ${x.season} · ${x.machine}: ${money(x.cost)} ₺`);
  $('serviceList').replaceChildren();for(const x of services)item($('serviceList'),`${x.season} · ${x.parcel_code} · ${x.kind} · ${money(x.amount)} ₺`);
  const seasons=[...new Set([...ops,...harvests,...rents,...supports,...maintenance,...services].map(x=>x.season).filter(Boolean))].sort().reverse(),sf=$('seasonFilter'),sv=sf.value;sf.replaceChildren();for(const x of seasons)sf.add(new Option(x,x));sf.value=sv||sf.options[0]?.value||'';
- const season=sf.value,filter=x=>x.season===season,inc=ops.filter(x=>filter(x)&&x.direction==='Gelir').reduce((n,x)=>n+number(x.amount),0)+sales.filter(filter).reduce((n,x)=>n+number(x.total),0)+supports.filter(filter).reduce((n,x)=>n+number(x.amount),0),expense=ops.filter(x=>filter(x)&&x.direction==='Gider').reduce((n,x)=>n+number(x.amount),0)+rents.filter(filter).reduce((n,x)=>n+number(x.total_amount),0)+maintenance.filter(filter).reduce((n,x)=>n+number(x.cost),0)+services.filter(filter).reduce((n,x)=>n+number(x.amount),0);
- $('analysisList').replaceChildren();if(season){item($('analysisList'),`Sezon: ${season}`);item($('analysisList'),`Kayıtlı gelir ve destekler: ${money(inc)} ₺`);item($('analysisList'),`Kayıtlı giderler (icar tahakkuku dahil): ${money(expense)} ₺`);item($('analysisList'),`Basit fark: ${money(inc-expense)} ₺`)}
+ const source=await all('sourceRecords');
+ const areas=source.filter(x=>x.table==='parcel_season_areas').map(x=>x.record);
+ const activities=source.filter(x=>x.table==='field_activities').map(x=>x.record);
+ const season=sf.value, filter=x=>x.season===season;
+ const selectedActivities=activities.filter(filter);
+ const selectedAreas=areas.filter(filter);
+ $('analysisList').replaceChildren();
+ if(season){
+   item($('analysisList'),`Sezon: ${season}`);
+   item($('analysisList'),`Bilgisayardan korunan tarla faaliyetleri: ${selectedActivities.length} kayıt`);
+   item($('analysisList'),`Ayrı işlenen alan kaydı: ${selectedAreas.length} parsel`);
+   for(const a of selectedAreas.sort((a,b)=>a.parcel_code.localeCompare(b.parcel_code)))
+     item($('analysisList'),`${a.parcel_code}: işlenen ${number(a.worked_area_da).toLocaleString('tr-TR')} da · icar ${number(a.leased_area_da).toLocaleString('tr-TR')} da`);
+   const incomes=ops.filter(x=>filter(x)&&x.direction==='Gelir').reduce((n,x)=>n+number(x.amount),0);
+   const expenses=ops.filter(x=>filter(x)&&x.direction==='Gider').reduce((n,x)=>n+number(x.amount),0);
+   item($('analysisList'),`İşlemler tablosundaki gelir: ${money(incomes)} ₺ (ayrı modüller eklenmedi)`);
+   item($('analysisList'),`İşlemler tablosundaki gider: ${money(expenses)} ₺ (ayrı modüller eklenmedi)`);
+   item($('analysisList'),'DİKKAT: Bu tutarlar kesin sezon kârı değildir. İcar, destek, bakım ve stok maliyetleriyle çift sayım kontrolü tamamlanmadı.');
+ }
+
 }
 for(const [formId,store] of extraForms){$(formId).onsubmit=async e=>{e.preventDefault();try{const x=Object.fromEntries(new FormData(e.target));x.id=uid();for(const key of ['quantity','unit_price','amount','cost','area_da','rate_per_da'])if(key in x){x[key]=number(x[key]);if(!Number.isFinite(x[key])||x[key]<0)throw Error('Negatif veya geçersiz sayı');}if(store==='harvests'||store==='sales'||store==='services')if(!(x.quantity>0))throw Error('Miktar pozitif olmalı');if(store==='rents'){if(!(x.area_da>0))throw Error('Alan pozitif olmalı');x.total_amount=Math.round(x.area_da*x.rate_per_da*100)/100}if(store==='sales'){const h=await all('harvests'),s=await all('sales');const stock=h.filter(y=>y.crop===x.crop).reduce((n,y)=>n+number(y.quantity),0)-s.filter(y=>y.crop===x.crop).reduce((n,y)=>n+number(y.quantity),0);if(x.quantity>stock+1e-8)throw Error(`Yetersiz ürün stoku: ${stock} kg`);x.total=Math.round(x.quantity*x.unit_price*100)/100}if(store==='services')x.amount=Math.round(x.quantity*x.unit_price*100)/100;if(store==='rentPayments'){const r=(await all('rents')).find(y=>y.id===x.rent_id);if(!r)throw Error('İcar seçin');const paid=(await all('rentPayments')).filter(y=>y.rent_id===x.rent_id).reduce((n,y)=>n+number(y.amount),0);if(x.amount<=0||x.amount>r.total_amount-paid+0.001)throw Error('Ödeme kalan borcu aşamaz')}await put(store,x);e.target.reset();for(const d of e.target.querySelectorAll('input[type=date]'))d.value=localDate();await render();await renderExtended()}catch(err){alert(err.message)}}}
 $('seasonFilter').onchange=renderExtended;

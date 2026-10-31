@@ -1,0 +1,7 @@
+V3.0.2 KONTROL SURUMU
+- Mevcut iPhone verilerini silmez; veritabani surumu degismez.
+- Bilgisayardan aktarılan tarla faaliyetleri ve sezonluk işlenen alanlar rapor ekranında gösterilir.
+- Negatif sifir stok gosterimi duzeltilir.
+- Mükerrer sayım riski nedeniyle rapor ekranında kesin kar sunulmaz.
+- FIFO ve mali hesaplar henüz bilgisayarla eslestirilmemistir.
+- Yüklemeden önce iPhone JSON yedeği alın. Gerçek JSON dosyasını GitHub'a koymayın.
