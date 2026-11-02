@@ -1,9 +1,11 @@
-Özcan Tarım Mobil V3.1.6
+Özcan Tarım Mobil V3.1.7
 - Faaliyetler ve Depo ekranlarında ortak mobil tasarım, okunabilir formlar ve kayıt listeleri.
 - Üstte kompakt Diğer bölümler menüsü ve uyumlu alt gezinme.
 - İşlem hesaplamaları, veritabanı şeması ve kayıtlar değiştirilmedi.
 - Gerçek iPhone testi kullanıcı tarafından yapılmalıdır.
 
-V3.1.6: Depoda stok özeti ve hızlı alış, Faaliyetlerde işlem seçimi ve yönlendirme. Çoklu malzeme tek kayıt henüz yoktur. Mevcut kayıt/FIFO kuralları değiştirilmedi.
+V3.1.7: Depoda stok özeti ve hızlı alış, Faaliyetlerde işlem seçimi ve yönlendirme. Çoklu malzeme tek kayıt henüz yoktur. Mevcut kayıt/FIFO kuralları değiştirilmedi.
 
-V3.1.6: Faaliyetlerde girdi kullanımı işlenen alan (da) × dönüm başına kullanım üzerinden hesaplanır. Alış miktarı toplamdır. Eski kayıtlar değişmez.
+V3.1.7: Faaliyetlerde girdi kullanımı işlenen alan (da) × dönüm başına kullanım üzerinden hesaplanır. Alış miktarı toplamdır. Eski kayıtlar değişmez.
+
+V3.1.7: Birleşik faaliyet formu: Ekim (tohum+gübre+motorin), Gübreleme (gübre+motorin), İlaçlama (ilaç+motorin), toprak işleme (motorin). Atomik stok/gider kaydı.

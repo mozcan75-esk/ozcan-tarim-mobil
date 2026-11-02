@@ -113,3 +113,10 @@ main>.notice{font-size:12px;padding:9px 11px;margin:0 0 10px}
 #useForm,#purchaseForm{scroll-margin-top:15px}
 
 .perda-note{font-size:13px;color:#466356;line-height:1.5}.usage-preview{background:#e8f5eb;border:1px solid #a5cdb3;border-radius:12px;padding:13px;font-size:15px;font-weight:700;color:#145a35;margin:10px 0}
+
+/* V3.1.7 combined activity */
+#combinedForm{border:1px solid #d9e9dd;background:#f8fcf9;border-radius:14px;padding:14px;margin:12px 0 18px}
+#combinedForm label{display:block;margin:8px 0;font-size:14px}
+#combinedForm input,#combinedForm select{width:100%;max-width:100%;box-sizing:border-box}
+.combined-row{padding:12px;margin:10px 0;background:#fff;border:1px solid #d6e6da;border-radius:12px}
+.combined-row h4{margin:0 0 8px;color:#176c43}.combined-result{font-size:13px;color:#24543a;margin:8px 0 0}
