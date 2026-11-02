@@ -1,1 +1,6 @@
-Önce iPhone uygulamasından JSON yedeği alın. ZIP içindeki index.html, app.js, extended.js, sw.js, style.css ve manifest.webmanifest dosyalarını GitHub deposunun ana dizinine yükleyin. Commit sonrası Safari ve ana ekran uygulamasında V3.0.7 sürümünü kontrol edin. JSON verisini GitHub’a yüklemeyin.
+Özcan Tarım V3.0.8
+1. iPhone uygulamasından JSON yedeği alın ve telefon dışında saklayın.
+2. ZIP içindeki 8 dosyayı GitHub Pages deposunun kök dizinine yükleyip Commit yapın.
+3. Yayın sonrası Safari üzerinden sürümü kontrol edin, sonra ana ekran uygulamasını açın.
+4. Gerçek JSON yedeğinizi GitHub’a ASLA yüklemeyin. Uygulamayı silmeyin, site verilerini temizlemeyin.
+5. Önce küçük tutarlı test yerine gerçek veri üzerinde kayıt oluşturmadan raporu kontrol edin; ödeme kaydı gerçekten ödeme yapıldıktan sonra girilmelidir.

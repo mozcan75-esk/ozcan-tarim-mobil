@@ -1,3 +1,5 @@
-V3.0.7: Kaynak işlemlerden parsel bazında tohum, gübre, motorin ve diğer gider dökümü; sezon işlenen alanı önceliği; hasat/satış kontrolü; ayrı kayıtların mükerrer sayılmaması. Kesin kâr hesaplanmaz.
+V3.0.8: Kaynak işlemlerden parsel bazında tohum, gübre, motorin ve diğer gider dökümü; sezon işlenen alanı önceliği; hasat/satış kontrolü; ayrı kayıtların mükerrer sayılmaması. Kesin kâr hesaplanmaz.
 
-V3.0.7: İcar tahakkuku ve açık borç, arpa ekim alanına göre tohum desteği dağıtımı, destek sonrası maliyet; salt okunur.
+V3.0.8: İcar tahakkuku ve açık borç, arpa ekim alanına göre tohum desteği dağıtımı, destek sonrası maliyet; salt okunur.
+
+V3.0.8: İcar ödeme kalan borç doğrulaması, iptal edilmiş ödeme hariç tutulması, sezon ve parsel eşlemesi, yeni arpa tohumu desteğinin ürün etiketlemesi ve rapora dağıtımı. Hasat/satış mevcut stok kısıtı korunur.
