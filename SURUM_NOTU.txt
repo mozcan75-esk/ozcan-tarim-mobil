@@ -1,3 +1,5 @@
-V3.1.3: iPhone ana sayfası kompakt tasarım, masaüstü ile aynı sezon işlenen alan ve işletme arazi hesaplama kuralı. P022 sezon 5 da, P010 36,704 da bir kez. Veriler değiştirilmez.
-
-V3.1.3: Kompakt başlık, sabit alt gezinme, tüm bölümler menüsü ve sadeleştirilmiş formlar. Veritabanı ve hesaplama mantığı değiştirilmedi.
+Özcan Tarım Mobil V3.1.4
+- Faaliyetler ve Depo ekranlarında ortak mobil tasarım, okunabilir formlar ve kayıt listeleri.
+- Üstte kompakt Diğer bölümler menüsü ve uyumlu alt gezinme.
+- İşlem hesaplamaları, veritabanı şeması ve kayıtlar değiştirilmedi.
+- Gerçek iPhone testi kullanıcı tarafından yapılmalıdır.
