@@ -19,14 +19,29 @@ async function renderDashboard(){
  const income=operationIncome+subsidy+saleIncome, totalExpense=expense+maint;
  const debt=rents.reduce((a,x)=>a+dashN(x.total_amount),0),rentIds=new Set(rents.map(x=>String(x.id)));
  const paid=d.rentPayments.filter(x=>dashLive(x)&&rentIds.has(String(x.rent_id))).reduce((a,x)=>a+dashN(x.amount),0);
- const active=d.parcels.filter(x=>x.active===undefined||dashN(x.active)!==0),totalArea=active.reduce((a,x)=>a+dashN(x.area_m2)/1000,0);
- const areas=d.sourceRecords.filter(x=>x.table==='parcel_season_areas').map(x=>x.record).filter(x=>dashSeason(x)===season),activities=d.sourceRecords.filter(x=>x.table==='field_activities').map(x=>x.record).filter(x=>dashSeason(x)===season);
- const areaMap=new Map(areas.map(x=>[x.parcel_code,dashN(x.worked_area_da)]));
- const byParcel=new Map();for(const a of activities){const code=a.parcel_code,area=dashN(a.area_da||a.worked_area_da);if(area>0)byParcel.set(code,Math.max(byParcel.get(code)||0,area));}
- for(const [k,v] of areaMap)byParcel.set(k,v);
- const worked=[...byParcel.values()].reduce((a,v)=>a+v,0);
+ // Desktop V1.9.31 dashboard parity: only distinct parcels with actual expense
+ // operations, excluding sale/harvest/rent. Seasonal area is a cap, not evidence of work.
+ const active=d.parcels.filter(x=>x.active===undefined||dashN(x.active)!==0);
+ const areas=d.sourceRecords.filter(x=>x.table==='parcel_season_areas').map(x=>x.record).filter(x=>dashSeason(x)===season);
+ const areaMap=new Map(areas.map(x=>[String(x.parcel_code),dashN(x.worked_area_da)]));
+ const leaseMap=new Map(areas.map(x=>[String(x.parcel_code),dashN(x.leased_area_da)]));
+ const parcelMap=new Map(active.map(x=>[String(x.code),x]));
+ const workedCodes=new Set(ops.filter(x=>x.direction==='Gider'&&!['Satış','Hasat','İcar/Kiralama'].includes(String(x.op_type||''))&&parcelMap.has(String(x.parcel_code||''))).map(x=>String(x.parcel_code)));
+ const parcelWorked=code=>areaMap.has(code)?areaMap.get(code):dashN(parcelMap.get(code)?.area_m2)/1000;
+ const worked=[...workedCodes].reduce((n,code)=>n+parcelWorked(code),0);
+ // Managed footprint: owned + leased, capped at cadastral area; allow cultivated
+ // extensions only when an actual operation exists. Mirrors desktop app.py.
+ const totalArea=active.reduce((n,p)=>{
+   const code=String(p.code),tapu=dashN(p.area_m2)/1000;
+   const owned=p.owned_area_da===null||p.owned_area_da===undefined?tapu:dashN(p.owned_area_da);
+   const base=Math.min(tapu,owned+Math.max(0,leaseMap.get(code)||0));
+   const actual=workedCodes.has(code)?parcelWorked(code):0;
+   return n+Math.max(base,actual);
+ },0);
  const kv=(id,value)=>{const el=dashEl(id);if(el)el.textContent=value;};
- kv('dashArea',dashNum(totalArea)+' da');kv('dashWorked',worked?dashNum(worked)+' da':'—');kv('dashParcels',active.length+' aktif parsel');
+ kv('dashArea',dashNum(totalArea)+' da');kv('dashWorked',worked?dashNum(worked)+' da':'—');kv('dashParcels',String(active.length));
+ kv('dashFieldCount',workedCodes.size+' işlem yapılan parsel');
+ kv('dashAreaNote',`P022 tapu 10 da / işlenen 5 da · P010 işlenen 36,704 da (icar ikinci kez eklenmez)`);
  kv('dashExpense',dashMoney(totalExpense)+' ₺');kv('dashIncome',dashMoney(income)+' ₺');kv('dashNet',dashMoney(income-totalExpense)+' ₺');kv('dashPerDa',worked?dashMoney((income-totalExpense)/worked)+' ₺/da':'—');
  kv('dashDebt',dashMoney(Math.max(0,debt-paid))+' ₺');kv('dashDebtTotal',dashMoney(debt)+' ₺');kv('dashPaid',dashMoney(paid)+' ₺');
  kv('dashSeed',dashMoney(ops.filter(x=>/tohum/i.test([x.category,x.item].join(' '))).reduce((a,x)=>a+(x.direction==='Gider'?dashN(x.amount):0),0))+' ₺');
@@ -43,7 +58,7 @@ async function renderDashboard(){
 function dashShow(tab){for(const p of document.querySelectorAll('.panel'))p.hidden=p.id!==tab;for(const b of document.querySelectorAll('[data-tab]'))b.classList.toggle('selected',b.dataset.tab===tab);if(tab==='home')renderDashboard().catch(console.error);}
 for(const b of document.querySelectorAll('[data-tab]'))b.addEventListener('click',()=>dashShow(b.dataset.tab));
 for(const b of document.querySelectorAll('[data-dash-tab]'))b.addEventListener('click',()=>dashShow(b.dataset.dashTab));
-dashEl('dashSeason').addEventListener('change',()=>{const v=dashEl('dashSeason').value;renderDashboard().then(()=>{dashEl('dashSeason').value=v;}).catch(console.error)});
+dashEl('dashSeason').addEventListener('change',()=>renderDashboard().catch(console.error));
 // Keep dashboard fresh after returning to the app or making changes in other tabs.
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!dashEl('home').hidden)renderDashboard().catch(console.error)});
 dashShow('home');

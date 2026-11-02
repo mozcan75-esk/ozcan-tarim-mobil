@@ -1,1 +1,1 @@
-V3.1.1 – Mobil ana sayfa: canlı sezon, alan, gelir/gider, açık borç, girdi ve ürün stoku. IndexedDB verilerine dokunmaz. İcar toplam gidere eklenmez; bilgisayar ekranındaki muhasebe gösterimi korunur.
+V3.1.2: iPhone ana sayfası kompakt tasarım, masaüstü ile aynı sezon işlenen alan ve işletme arazi hesaplama kuralı. P022 sezon 5 da, P010 36,704 da bir kez. Veriler değiştirilmez.

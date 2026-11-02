@@ -1,1 +1,1 @@
-Önce iPhone JSON yedeği alın. ZIP içindeki 9 dosyayı GitHub Pages depo ana dizinine yükleyin. Commit sonrası iPhone uygulamasını internet açıkken açın. Site verilerini silmeyin.
+Önce iPhone JSON yedeği alın. ZIP içindeki dosyaları GitHub Pages deponuzun köküne yükleyin ve commit edin. Gerçek veri dosyasını GitHub’a yüklemeyin.
