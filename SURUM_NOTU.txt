@@ -1,1 +1,1 @@
-Özcan Tarım V3.1.0 — Konsolide parsel raporu. Bakım işlenen alan oranında, arpa desteği arpa alanına göre, icar mükerrer kontrolü, gerçekleşen satış geliri. Salt okunur; veri değiştirmez.
+V3.1.1 – Mobil ana sayfa: canlı sezon, alan, gelir/gider, açık borç, girdi ve ürün stoku. IndexedDB verilerine dokunmaz. İcar toplam gidere eklenmez; bilgisayar ekranındaki muhasebe gösterimi korunur.
