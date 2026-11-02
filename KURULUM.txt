@@ -1,1 +1,1 @@
-1) iPhone uygulamasından JSON yedeği alın. 2) ZIP içindeki dosyaları GitHub Pages deposunun ana dizinine yükleyin. 3) Commit yapın ve yayını bekleyin. 4) Safari ve ana ekran uygulamasında V3.0.9 görünümünü kontrol edin. Gerçek veri JSON dosyasını GitHub’a yüklemeyin.
+1) iPhone uygulamasından JSON yedeği alın. 2) ZIP içindeki dosyaları GitHub Pages deposunun ana dizinine yükleyin. 3) Commit yapın ve yayını bekleyin. 4) Safari ve ana ekran uygulamasında V3.1.0 görünümünü kontrol edin. Gerçek veri JSON dosyasını GitHub’a yüklemeyin.

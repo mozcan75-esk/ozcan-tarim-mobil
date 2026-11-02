@@ -1,2 +1,1 @@
-V3.0.9 – Hasat / Ürün Deposu / Satış / Parsel Geliri
-Yeni satışlar tarih ve sezon bazında FIFO hasat lotlarından düşer; parsel tahsisi satış kaydında saklanır. Eski tahsissiz satışlar gelir toplamında kalır ama parsele zorla dağıtılmaz. Kayıtlı giderler korunur. Bu bir test sürümüdür.
+Özcan Tarım V3.1.0 — Konsolide parsel raporu. Bakım işlenen alan oranında, arpa desteği arpa alanına göre, icar mükerrer kontrolü, gerçekleşen satış geliri. Salt okunur; veri değiştirmez.

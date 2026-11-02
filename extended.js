@@ -176,6 +176,64 @@ async function renderExtended(){
      if(supportAmount>0&&!totalBarleyArea){const w=document.createElement('p');w.textContent='UYARI: Arpa ekim alanı doğrulanamadığı için destek dağıtılmadı.';block.append(w)}
      p307.append(block);
    }
+
+   // V3.1.0: Salt-okunur konsolide parsel performansı. Veri kayıtlarını değiştirmez.
+   const p310=document.getElementById('parcelProfitability');
+   if(p310){
+     const sec=document.createElement('section');
+     const h=document.createElement('h3');h.textContent='V3.1.0 · Konsolide parsel maliyeti ve gerçekleşen satış';sec.append(h);
+     const n=document.createElement('p');n.textContent='Bakım, sezonluk işlenen alan oranında dağıtılır. Sezon alan kaydı yoksa tarla faaliyeti alanı geçici olarak kullanılır ve işaretlenir; tapu alanı bakım dağıtımında kullanılmaz. Hasat satış geliri değildir. Kâr yalnızca gerçekleşen satışlara dayalı dönemsel sonuçtur; satılmamış ürünlerin değeri dahil değildir.';sec.append(n);
+     const codes=[...new Set([...parcels.map(x=>x.code),...sourceOps.map(x=>x.parcel_code).filter(Boolean)])].sort();
+     const areaMap=new Map(),provisional=new Set();
+     for(const code of codes){
+       const explicit=selectedAreas.find(x=>x.parcel_code===code&&number(x.worked_area_da)>0);
+       if(explicit){areaMap.set(code,number(explicit.worked_area_da));continue}
+       const candidates=selectedActivities.filter(x=>x.parcel_code===code&&number(x.area_da)>0).map(x=>number(x.area_da));
+       if(candidates.length){areaMap.set(code,Math.max(...candidates));provisional.add(code)}
+     }
+     const areaTotal=[...areaMap.values()].reduce((a,b)=>a+b,0);
+     const maintenanceTotal=maintenance.filter(x=>x.season===season&&!number(x.is_cancelled)).reduce((a,x)=>a+number(x.cost),0);
+     const rentsSeason=rents.filter(x=>x.season===season&&!number(x.is_cancelled));
+     const supportsSeason=supports.filter(x=>x.season===season&&!number(x.is_cancelled));
+     const barleySupports=supportsSeason.filter(x=>/arpa/i.test([x.crop,x.description,x.support_type].join(' '))&&/tohum/i.test([x.description,x.support_type].join(' ')));
+     const supportTotal=barleySupports.reduce((a,x)=>a+number(x.amount),0);
+     const barleyMap=new Map();
+     for(const op of sourceOps.filter(x=>x.direction==='Gider'&&/arpa/i.test(String(x.item||''))&&/tohum/i.test(String(x.category||'')))){
+       const code=String(op.parcel_code||'');if(code&&areaMap.has(code))barleyMap.set(code,areaMap.get(code));
+     }
+     const barleyTotal=[...barleyMap.values()].reduce((a,b)=>a+b,0);
+     const incomeByParcel=new Map(),harvestByParcel=new Map(),soldByParcel=new Map();let untiedIncome=0;
+     for(const x of harvests.filter(x=>x.season===season&&!number(x.is_cancelled))){const c=String(x.parcel_code||'');harvestByParcel.set(c,(harvestByParcel.get(c)||0)+number(x.quantity))}
+     for(const sale of sales.filter(x=>x.season===season&&!number(x.is_cancelled))){
+       const alloc=Array.isArray(sale.allocations)?sale.allocations:[],kg=alloc.reduce((a,x)=>a+number(x.quantity),0),total=number(sale.total);
+       if(!(kg>0)){untiedIncome+=total;continue}
+       let assigned=0;
+       for(let i=0;i<alloc.length;i++){const x=alloc[i],c=String(x.parcel_code||''),value=i===alloc.length-1?Math.round((total-assigned)*100)/100:Math.round(total*number(x.quantity)/kg*100)/100;assigned+=value;
+         if(!c){untiedIncome+=value;continue}
+         incomeByParcel.set(c,(incomeByParcel.get(c)||0)+value);soldByParcel.set(c,(soldByParcel.get(c)||0)+number(x.quantity));
+       }
+     }
+     const round=x=>Math.round((x+Number.EPSILON)*100)/100;
+     const maintainCodes=[...areaMap.keys()].sort(),barleyCodes=[...barleyMap.keys()].sort();
+     let maintenanceAssigned=0,supportAssigned=0,baseSum=0,rentSum=0,profitSum=0;
+     const table=document.createElement('table');table.className='profit-table';const trh=document.createElement('tr');
+     for(const label of ['Parsel','İşlenen alan (da)','İşlem gideri','İcar ilavesi','Bakım payı','Arpa destek payı','Destek sonrası maliyet','Hasat (kg)','Satış (kg)','Satış geliri','Dönemsel sonuç','Sonuç/da']){const th=document.createElement('th');th.textContent=label;trh.append(th)}table.append(trh);
+     for(const code of codes){
+       const base=sourceOps.filter(x=>x.parcel_code===code&&x.direction==='Gider').reduce((a,x)=>a+number(x.amount),0);baseSum+=base;
+       const rent=rentsSeason.filter(x=>x.parcel_code===code).reduce((a,x)=>a+number(x.total_amount),0);
+       const existingRent=sourceOps.filter(x=>x.parcel_code===code&&x.direction==='Gider'&&/icar|kira/i.test([x.category,x.op_type,x.item].join(' '))).reduce((a,x)=>a+number(x.amount),0);
+       const rentAdd=Math.max(0,round(rent-existingRent));rentSum+=rentAdd;
+       const area=areaMap.get(code)||0;
+       const maintenanceShare=areaTotal>0&&areaMap.has(code)?(code===maintainCodes.at(-1)?round(maintenanceTotal-maintenanceAssigned):round(maintenanceTotal*area/areaTotal)):0;maintenanceAssigned+=maintenanceShare;
+       const supportShare=barleyTotal>0&&barleyMap.has(code)?(code===barleyCodes.at(-1)?round(supportTotal-supportAssigned):round(supportTotal*area/barleyTotal)):0;supportAssigned+=supportShare;
+       const cost=base+rentAdd+maintenanceShare-supportShare,revenue=incomeByParcel.get(code)||0,result=revenue-cost;profitSum+=result;
+       const row=document.createElement('tr');for(const value of [code,area?area.toLocaleString('tr-TR',{maximumFractionDigits:3})+(provisional.has(code)?'*':''):'—',money(base),money(rentAdd),money(maintenanceShare),money(supportShare),money(cost),money(harvestByParcel.get(code)||0),money(soldByParcel.get(code)||0),money(revenue),money(result),area?money(result/area):'—']){const td=document.createElement('td');td.textContent=value;row.append(td)}table.append(row);
+     }
+     const wrap=document.createElement('div');wrap.className='profit-scroll';wrap.append(table);sec.append(wrap);
+     const totals=document.createElement('p');totals.textContent=`İşlem gideri: ${money(baseSum)} ₺ · İcar ilavesi: ${money(rentSum)} ₺ · Bakım dağıtımı: ${money(maintenanceAssigned)} / ${money(maintenanceTotal)} ₺ · Arpa desteği dağıtımı: ${money(supportAssigned)} / ${money(supportTotal)} ₺ · Gerçekleşen satışlardan dönemsel sonuç: ${money(profitSum)} ₺ · Parsellere bağlanamayan satış geliri: ${money(untiedIncome)} ₺.`;sec.append(totals);
+     const warning=document.createElement('p');warning.textContent=`Alanı tarla faaliyetinden geçici alınan ${provisional.size} parsel (*) bulunuyor. Alanı olmayan parseller bakım payı alamaz. ${!areaTotal?'UYARI: Bakım dağıtılamadı. ':''}${supportTotal>0&&!barleyTotal?'UYARI: Arpa desteği dağıtılamadı. ':''}Satılmayan ürünler ve doğrulanmamış genel giderler dahil olmadığından bu sonuç kesin sezon net kârı değildir. Gider ve destekleri tekrar muhasebeleştirmez.`;sec.append(warning);
+     p310.append(sec);
+   }
    const sourceSupports=source.filter(x=>x.table==='supports').map(x=>x.record).filter(x=>x.season===season&&!Number(x.is_cancelled));
    const sourceMaintenance=source.filter(x=>x.table==='machine_maintenance').map(x=>x.record).filter(x=>x.season===season&&!Number(x.is_cancelled));
    const sourceRents=source.filter(x=>x.table==='rent_contracts').map(x=>x.record).filter(x=>x.season===season&&!Number(x.is_cancelled));
