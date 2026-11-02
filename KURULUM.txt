@@ -1,1 +1,3 @@
 Önce iPhone JSON yedeği alın. ZIP içindeki dosyaları GitHub Pages deponuzun köküne yükleyin ve commit edin. Gerçek veri dosyasını GitHub’a yüklemeyin.
+
+V3.1.3: Kompakt başlık, sabit alt gezinme, tüm bölümler menüsü ve sadeleştirilmiş formlar. Veritabanı ve hesaplama mantığı değiştirilmedi.

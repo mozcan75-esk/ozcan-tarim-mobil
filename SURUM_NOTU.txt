@@ -1,1 +1,3 @@
-V3.1.2: iPhone ana sayfası kompakt tasarım, masaüstü ile aynı sezon işlenen alan ve işletme arazi hesaplama kuralı. P022 sezon 5 da, P010 36,704 da bir kez. Veriler değiştirilmez.
+V3.1.3: iPhone ana sayfası kompakt tasarım, masaüstü ile aynı sezon işlenen alan ve işletme arazi hesaplama kuralı. P022 sezon 5 da, P010 36,704 da bir kez. Veriler değiştirilmez.
+
+V3.1.3: Kompakt başlık, sabit alt gezinme, tüm bölümler menüsü ve sadeleştirilmiş formlar. Veritabanı ve hesaplama mantığı değiştirilmedi.
