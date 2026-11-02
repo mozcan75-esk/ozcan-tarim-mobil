@@ -1,7 +1,9 @@
 1. iPhone uygulamasından JSON yedeği alın.
 2. ZIP içindeki tüm dosyaları GitHub Pages deponuzun köküne yükleyin.
 3. Commit changes yapın ve Pages yayınının tamamlanmasını bekleyin.
-4. iPhone uygulamasını internet açıkken açın; V3.1.5, Faaliyetler ve Depo görünümünü kontrol edin.
+4. iPhone uygulamasını internet açıkken açın; V3.1.6, Faaliyetler ve Depo görünümünü kontrol edin.
 5. Uygulamayı silmeyin; site verilerini temizlemeyin.
 
-V3.1.5: Depoda stok özeti ve hızlı alış, Faaliyetlerde işlem seçimi ve yönlendirme. Çoklu malzeme tek kayıt henüz yoktur. Mevcut kayıt/FIFO kuralları değiştirilmedi.
+V3.1.6: Depoda stok özeti ve hızlı alış, Faaliyetlerde işlem seçimi ve yönlendirme. Çoklu malzeme tek kayıt henüz yoktur. Mevcut kayıt/FIFO kuralları değiştirilmedi.
+
+V3.1.6: Faaliyetlerde girdi kullanımı işlenen alan (da) × dönüm başına kullanım üzerinden hesaplanır. Alış miktarı toplamdır. Eski kayıtlar değişmez.
