@@ -1,12 +1,29 @@
  'use strict';
 const number=x=>Number(x||0), uid=()=>crypto.randomUUID();
 const escapeText=x=>String(x??'');
+// V3.0.9: Ürün deposu için hasat partisi bazında FIFO tahsis (parsel geliri).
+const cropKey=x=>String(x||'').trim().toLocaleLowerCase('tr-TR');
+function allocateCropSale(harvests,sales,crop,quantity,date,season){
+ const key=cropKey(crop), lots=harvests.filter(h=>cropKey(h.crop)===key&&h.season===season&&!number(h.is_cancelled)&&String(h.date||'')<=date).sort((a,b)=>String(a.date).localeCompare(String(b.date))||String(a.id).localeCompare(String(b.id)));
+ const used=new Map();
+ for(const sale of sales.filter(x=>cropKey(x.crop)===key&&x.season===season&&!number(x.is_cancelled)&&String(x.date||'')<=date)){
+   if(Array.isArray(sale.allocations)&&sale.allocations.length){for(const a of sale.allocations)used.set(String(a.harvest_id),(used.get(String(a.harvest_id))||0)+number(a.quantity));}
+   else { // Eski satışlar: parseli bilinmese de stoğu tüketir.
+     let pending=number(sale.quantity);
+     for(const h of lots){const left=Math.max(0,number(h.quantity)-(used.get(String(h.id))||0));const take=Math.min(left,pending);used.set(String(h.id),(used.get(String(h.id))||0)+take);pending-=take;if(pending<=1e-7)break;}
+   }
+ }
+ let remaining=quantity;const allocations=[];
+ for(const h of lots){const left=Math.max(0,number(h.quantity)-(used.get(String(h.id))||0));const take=Math.min(left,remaining);if(take>1e-7){allocations.push({harvest_id:String(h.id),parcel_code:h.parcel_code,quantity:take});remaining-=take;}if(remaining<=1e-7)break;}
+ if(remaining>1e-7)throw Error('Bu tarihte ve sezonda yeterli ürün stoku yok. Eksik: '+remaining.toLocaleString('tr-TR')+' kg');
+ return allocations;
+}
 const extraForms=[['harvestForm','harvests'],['saleForm','sales'],['rentForm','rents'],['rentPaymentForm','rentPayments'],['supportForm','supports'],['maintenanceForm','maintenance'],['serviceForm','services']];
 async function renderExtended(){
  const [parcels,harvests,sales,rents,payments,supports,maintenance,services,ops,moves,inputs]=await Promise.all(['parcels','harvests','sales','rents','rentPayments','supports','maintenance','services','operations','stockMoves','inputs'].map(all));
  for(const sel of document.querySelectorAll('.extraParcel')){const val=sel.value;sel.replaceChildren();for(const x of parcels)sel.add(new Option(`${x.name} (${x.code})`,x.code));sel.value=val||sel.options[0]?.value||''}
- const crops=[...new Set(harvests.map(x=>x.crop))].sort(),sel=$('cropSelect'),old=sel.value;sel.replaceChildren();for(const crop of crops)sel.add(new Option(crop,crop));sel.value=old||sel.options[0]?.value||'';
- $('cropList').replaceChildren();for(const crop of crops){const total=harvests.filter(x=>x.crop===crop).reduce((n,x)=>n+number(x.quantity),0)-sales.filter(x=>x.crop===crop).reduce((n,x)=>n+number(x.quantity),0);item($('cropList'),`${crop}: ${total.toLocaleString('tr-TR')} kg stok`)}
+ const crops=[...new Set(harvests.filter(x=>!number(x.is_cancelled)).map(x=>x.crop))].sort(),sel=$('cropSelect'),old=sel.value;sel.replaceChildren();for(const crop of crops)sel.add(new Option(crop,crop));sel.value=old||sel.options[0]?.value||'';
+ $('cropList').replaceChildren();for(const crop of crops){const total=harvests.filter(x=>cropKey(x.crop)===cropKey(crop)&&!number(x.is_cancelled)).reduce((n,x)=>n+number(x.quantity),0)-sales.filter(x=>cropKey(x.crop)===cropKey(crop)&&!number(x.is_cancelled)).reduce((n,x)=>n+number(x.quantity),0);item($('cropList'),`${crop}: ${total.toLocaleString('tr-TR')} kg stok`)}
  const rsel=$('rentSelect'),rv=rsel.value;rsel.replaceChildren();$('rentList').replaceChildren();for(const r of rents){const paid=payments.filter(x=>String(x.rent_id)===String(r.id)&&!number(x.is_cancelled)).reduce((n,x)=>n+number(x.amount),0);rsel.add(new Option(`${r.landlord} / ${r.parcel_code} / ${r.season}`,r.id));item($('rentList'),`${r.season} · ${r.parcel_code} · ${r.landlord} · İcar: ${money(r.total_amount)} ₺ · Ödenen: ${money(paid)} ₺ · Kalan: ${money(number(r.total_amount)-paid)} ₺`)}rsel.value=rv||rsel.options[0]?.value||'';
  $('supportList').replaceChildren();for(const x of supports)item($('supportList'),`Destek · ${x.season} · ${x.support_type}: ${money(x.amount)} ₺ · ${x.description||''}`);for(const x of maintenance)item($('supportList'),`Bakım · ${x.season} · ${x.machine}: ${money(x.cost)} ₺`);
  $('serviceList').replaceChildren();for(const x of services)item($('serviceList'),`${x.season} · ${x.parcel_code} · ${x.kind} · ${money(x.amount)} ₺`);
@@ -73,6 +90,23 @@ async function renderExtended(){
      const crop=document.createElement('p');crop.textContent=`Hasat: ${harvested.toLocaleString('tr-TR')} kg · Satış: ${sold.toLocaleString('tr-TR')} kg · Satış tutarı: ${money(revenue)} ₺. Satış kaydında parsel bağı bulunmadığı için gelir parsele dağıtılmaz; ürün stoku küresel olarak izlenir.`;profitability.append(crop);
    }
 
+   // V3.0.9: hasat lotlarından satışa tahsis edilmiş parsel gelirleri.
+   const p309=document.getElementById('parcelProfitability');
+   if(p309){
+     const section=document.createElement('section');const heading=document.createElement('h3');heading.textContent='V3.0.9 · Hasat, satış ve parsel geliri';section.append(heading);
+     const text=document.createElement('p');text.textContent='Hasat depoya girer, gelir sayılmaz. Yeni satışlar aynı sezon ve satış tarihine kadar hasat edilmiş ürünlerden FIFO ile karşılanır. Önceki sürümlerin tahsissiz satışları parsel gelirine dağıtılmaz.';section.append(text);
+     const sh=harvests.filter(x=>x.season===season&&!number(x.is_cancelled)),ss=sales.filter(x=>x.season===season&&!number(x.is_cancelled));
+     const byParcel=new Map();let unallocated=0;
+     for(const sale of ss){const total=number(sale.total);if(!Array.isArray(sale.allocations)||!sale.allocations.length){unallocated+=total;continue;}const totalKg=sale.allocations.reduce((n,a)=>n+number(a.quantity),0);if(!(totalKg>0)){unallocated+=total;continue;}let allocated=0;for(let i=0;i<sale.allocations.length;i++){const a=sale.allocations[i],revenue=i===sale.allocations.length-1?total-allocated:Math.round(total*number(a.quantity)/totalKg*100)/100;allocated+=revenue;const key=String(a.parcel_code||'');byParcel.set(key,(byParcel.get(key)||0)+revenue);}}
+     const table=document.createElement('table');table.className='profit-table';const head=document.createElement('tr');for(const n of ['Parsel','Hasat (kg)','Satış geliri (₺)','Kayıtlı işlem gideri (₺)','İşlem bazlı fark (₺)']){const th=document.createElement('th');th.textContent=n;head.append(th)}table.append(head);
+     const keys=[...new Set([...sh.map(x=>x.parcel_code),...byParcel.keys()])].filter(Boolean).sort();
+     for(const code of keys){const kg=sh.filter(x=>x.parcel_code===code).reduce((n,x)=>n+number(x.quantity),0),income=byParcel.get(code)||0,cost=sourceOps.filter(x=>x.parcel_code===code&&x.direction==='Gider').reduce((n,x)=>n+number(x.amount),0);const row=document.createElement('tr');for(const val of [code,kg.toLocaleString('tr-TR'),money(income),money(cost),money(income-cost)]){const td=document.createElement('td');td.textContent=val;row.append(td)}table.append(row)}
+     const scroll=document.createElement('div');scroll.className='profit-scroll';scroll.append(table);section.append(scroll);
+     const gross=ss.reduce((n,x)=>n+number(x.total),0),stockKg=sh.reduce((n,x)=>n+number(x.quantity),0)-ss.reduce((n,x)=>n+number(x.quantity),0);
+     const summary=document.createElement('p');summary.textContent=`Sezon hasadı: ${sh.reduce((n,x)=>n+number(x.quantity),0).toLocaleString('tr-TR')} kg · Satış: ${ss.reduce((n,x)=>n+number(x.quantity),0).toLocaleString('tr-TR')} kg · Kalan ürün: ${stockKg.toLocaleString('tr-TR')} kg · Satış geliri: ${money(gross)} ₺ · Parsele tahsis edilemeyen eski satış: ${money(unallocated)} ₺.`;section.append(summary);
+     const caveat=document.createElement('p');caveat.textContent='İşlem bazlı fark kesin net kâr değildir. İcar, destek, bakım, hasat hizmetleri ve geçmiş satış tahsisleri ayrıca değerlendirilmelidir.';section.append(caveat);
+     p309.append(section);
+   }
    // V3.0.7: salt-okunur icar tahakkuku, açık borç ve arpa tohum desteği dağıtımı.
    const p307=document.getElementById('parcelProfitability');
    if(p307){
@@ -181,7 +215,7 @@ async function renderExtended(){
  }
 
 }
-for(const [formId,store] of extraForms){$(formId).onsubmit=async e=>{e.preventDefault();try{const x=Object.fromEntries(new FormData(e.target));x.id=uid();for(const key of ['quantity','unit_price','amount','cost','area_da','rate_per_da'])if(key in x){x[key]=number(x[key]);if(!Number.isFinite(x[key])||x[key]<0)throw Error('Negatif veya geçersiz sayı');}if(store==='harvests'||store==='sales'||store==='services')if(!(x.quantity>0))throw Error('Miktar pozitif olmalı');if(store==='rents'){if(!(x.area_da>0))throw Error('Alan pozitif olmalı');x.total_amount=Math.round(x.area_da*x.rate_per_da*100)/100}if(store==='sales'){const h=await all('harvests'),s=await all('sales');const stock=h.filter(y=>y.crop===x.crop).reduce((n,y)=>n+number(y.quantity),0)-s.filter(y=>y.crop===x.crop).reduce((n,y)=>n+number(y.quantity),0);if(x.quantity>stock+1e-8)throw Error(`Yetersiz ürün stoku: ${stock} kg`);x.total=Math.round(x.quantity*x.unit_price*100)/100}if(store==='supports'){if(!(x.amount>0))throw Error('Destek tutarı sıfırdan büyük olmalı');x.amount=Math.round(x.amount*100)/100;x.payment_date=x.date;x.crop=/arpa/i.test(x.description+' '+x.support_type)?'Arpa':'';if(x.crop==='Arpa'&&!/tohum/i.test(x.description+' '+x.support_type))throw Error('Arpa tohumu desteği açıklamasını belirtin');}if(store==='services')x.amount=Math.round(x.quantity*x.unit_price*100)/100;if(store==='rentPayments'){const r=(await all('rents')).find(y=>String(y.id)===String(x.rent_id)&&!number(y.is_cancelled));if(!r)throw Error('Geçerli icar sözleşmesi seçin');const paid=(await all('rentPayments')).filter(y=>String(y.rent_id)===String(x.rent_id)&&!number(y.is_cancelled)).reduce((n,y)=>n+number(y.amount),0);const remaining=Math.round((number(r.total_amount)-paid)*100)/100;if(!(x.amount>0)||Math.round(x.amount*100)/100>remaining)throw Error('Ödeme kalan borcu aşamaz: '+money(remaining)+' ₺');x.amount=Math.round(x.amount*100)/100;x.season=r.season;x.parcel_code=r.parcel_code;x.payment_date=x.date;}await put(store,x);e.target.reset();for(const d of e.target.querySelectorAll('input[type=date]'))d.value=localDate();await render();await renderExtended()}catch(err){alert(err.message)}}}
+for(const [formId,store] of extraForms){$(formId).onsubmit=async e=>{e.preventDefault();try{const x=Object.fromEntries(new FormData(e.target));x.id=uid();for(const key of ['quantity','unit_price','amount','cost','area_da','rate_per_da'])if(key in x){x[key]=number(x[key]);if(!Number.isFinite(x[key])||x[key]<0)throw Error('Negatif veya geçersiz sayı');}if(store==='harvests'||store==='sales'||store==='services')if(!(x.quantity>0))throw Error('Miktar pozitif olmalı');if(store==='rents'){if(!(x.area_da>0))throw Error('Alan pozitif olmalı');x.total_amount=Math.round(x.area_da*x.rate_per_da*100)/100}if(store==='harvests'){x.crop=x.crop.trim();if(!x.crop)throw Error('Ürün adı gerekli');if(!(await all('parcels')).some(p=>p.code===x.parcel_code))throw Error('Geçerli parsel seçin')}if(store==='sales'){const h=await all('harvests'),s=await all('sales');x.allocations=allocateCropSale(h,s,x.crop,x.quantity,x.date,x.season);x.total=Math.round(x.quantity*x.unit_price*100)/100}if(store==='supports'){if(!(x.amount>0))throw Error('Destek tutarı sıfırdan büyük olmalı');x.amount=Math.round(x.amount*100)/100;x.payment_date=x.date;x.crop=/arpa/i.test(x.description+' '+x.support_type)?'Arpa':'';if(x.crop==='Arpa'&&!/tohum/i.test(x.description+' '+x.support_type))throw Error('Arpa tohumu desteği açıklamasını belirtin');}if(store==='services')x.amount=Math.round(x.quantity*x.unit_price*100)/100;if(store==='rentPayments'){const r=(await all('rents')).find(y=>String(y.id)===String(x.rent_id)&&!number(y.is_cancelled));if(!r)throw Error('Geçerli icar sözleşmesi seçin');const paid=(await all('rentPayments')).filter(y=>String(y.rent_id)===String(x.rent_id)&&!number(y.is_cancelled)).reduce((n,y)=>n+number(y.amount),0);const remaining=Math.round((number(r.total_amount)-paid)*100)/100;if(!(x.amount>0)||Math.round(x.amount*100)/100>remaining)throw Error('Ödeme kalan borcu aşamaz: '+money(remaining)+' ₺');x.amount=Math.round(x.amount*100)/100;x.season=r.season;x.parcel_code=r.parcel_code;x.payment_date=x.date;}await put(store,x);e.target.reset();for(const d of e.target.querySelectorAll('input[type=date]'))d.value=localDate();await render();await renderExtended()}catch(err){alert(err.message)}}}
 $('seasonFilter').onchange=renderExtended;
 for(const d of document.querySelectorAll('input[type=date]'))if(!d.value)d.value=localDate();
 const originalRender=render;render=async function(){await originalRender();await renderExtended()};
