@@ -1,1 +1,1 @@
-Önce uygulamadan JSON yedeği alın. ZIP içindeki tüm dosyaları GitHub Pages deposunun köküne yükleyip Commit yapın. Safari üzerinden güncellemeyi açın. Diğer Bölümler > Balya Deposu ekranını kontrol edin. Gerçek satış kaydı oluşturmadan stok önizlemesini inceleyin.
+Önce JSON yedeği alın. Tüm dosyaları GitHub Pages depo köküne yükleyin. Safari ile güncellemeyi açın. Raporlar ekranında V3.2.5 parsel tablosunu inceleyin; kayıt girmeden doğrulayın.
