@@ -1,1 +1,1 @@
-V3.2.2: Sezon alanları açılır liste oldu. Kaydedilmiş sezonlar 2026/2027 biçiminde gösterilir; ana sayfa sezonu varsayılan alınır. Veritabanındaki geçmiş kayıtlar değiştirilmez. iPhone canlı testi gereklidir.
+V3.2.3 – Hasat, biçerdöver gideri ve balyalama kaydını tek formdan atomik kaydetme. Ürün ve alan parsel/sezon ekim kayıtlarından önerilir. Balya stok ve satış ekranı henüz eklenmedi; hizmet giderleri services tablosuna, balya miktarı bales tablosuna yazılır. Eski formlar ve kayıtlar korunur. Canlı iPhone testi gereklidir.
