@@ -1,1 +1,1 @@
-Önce iPhone uygulamasından JSON yedeği alın. ZIP içindeki tüm dosyaları GitHub Pages deposunun köküne yükleyin ve Commit yapın. Safari ile siteyi açıp güncellemeyi kontrol edin. Gerçek kayıt girmeden önce önizlemeleri test edin.
+Önce JSON yedeği alın. ZIP içindeki 14 dosyayı GitHub Pages deponuzun köküne yükleyip Commit yapın. Safari ile siteyi yeniden açın. Hasat ekranında sezon ve parsel seçerek otomatik ürün bilgisini kontrol edin. Gerçek hasat kaydı oluşturmadan test edin.
