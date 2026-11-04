@@ -1,11 +1,4 @@
-1. iPhone uygulamasından JSON yedeği alın.
-2. ZIP içindeki tüm dosyaları GitHub Pages deponuzun köküne yükleyin.
-3. Commit changes yapın ve Pages yayınının tamamlanmasını bekleyin.
-4. iPhone uygulamasını internet açıkken açın; V3.1.7, Faaliyetler ve Depo görünümünü kontrol edin.
-5. Uygulamayı silmeyin; site verilerini temizlemeyin.
-
-V3.1.7: Depoda stok özeti ve hızlı alış, Faaliyetlerde işlem seçimi ve yönlendirme. Çoklu malzeme tek kayıt henüz yoktur. Mevcut kayıt/FIFO kuralları değiştirilmedi.
-
-V3.1.7: Faaliyetlerde girdi kullanımı işlenen alan (da) × dönüm başına kullanım üzerinden hesaplanır. Alış miktarı toplamdır. Eski kayıtlar değişmez.
-
-V3.1.7: Birleşik faaliyet formu: Ekim (tohum+gübre+motorin), Gübreleme (gübre+motorin), İlaçlama (ilaç+motorin), toprak işleme (motorin). Atomik stok/gider kaydı.
+Önce iPhone uygulamasından JSON yedeği alın ve telefon dışında saklayın.
+Bu ZIP içindeki 12 dosyayı GitHub Pages deposunun kök dizinine yükleyin (mevcut dosyaların üzerine). Commit changes yapın.
+Safari ile siteyi internet açıkken açın, ardından ana ekrana eklenen uygulamayı yeniden başlatın.
+Gerçek kayıt yerine önce sıfır girdili satırları ve önizlemeyi kontrol edin. Test sürümüdür; Windows ile otomatik eşitlenmez.
