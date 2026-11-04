@@ -1,1 +1,1 @@
-ÖNCE iPhone JSON yedeği alın. ZIP içindeki tüm dosyaları GitHub Pages depo köküne yükleyin ve Commit yapın. Safari ve iPhone uygulamasında V3.2.3 güncellemesini kontrol edin. İlk testte kayıt oluşturmadan hasat ve hizmet önizlemelerini inceleyin. Gerçek veri yedeğini GitHub’a yüklemeyin.
+Önce uygulamadan JSON yedeği alın. ZIP içindeki tüm dosyaları GitHub Pages deposunun köküne yükleyip Commit yapın. Safari üzerinden güncellemeyi açın. Diğer Bölümler > Balya Deposu ekranını kontrol edin. Gerçek satış kaydı oluşturmadan stok önizlemesini inceleyin.

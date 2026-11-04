@@ -1,1 +1,1 @@
-V3.2.3 – Hasat, biçerdöver gideri ve balyalama kaydını tek formdan atomik kaydetme. Ürün ve alan parsel/sezon ekim kayıtlarından önerilir. Balya stok ve satış ekranı henüz eklenmedi; hizmet giderleri services tablosuna, balya miktarı bales tablosuna yazılır. Eski formlar ve kayıtlar korunur. Canlı iPhone testi gereklidir.
+V3.2.4 – Balya deposu ve parsel bazında balya satışı. Adet bazında stok, tarih kontrolü, FIFO balya partisi tahsisi, parsel gelir ve balyalama gider özeti. Mevcut kayıtlar değiştirilmez. Canlı iPhone kayıt testi gereklidir.
