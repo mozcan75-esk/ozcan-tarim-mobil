@@ -1,1 +1,1 @@
-V3.2.0: Hasatta sezon+parsel seçilince ekim tohum kayıtlarından ürün otomatik bulunur. Birden fazla ürün varsa seçilir; kayıt yoksa elle yazılır. Veritabanı şeması ve mevcut kayıtlar değişmez.
+V3.2.2: Sezon alanları açılır liste oldu. Kaydedilmiş sezonlar 2026/2027 biçiminde gösterilir; ana sayfa sezonu varsayılan alınır. Veritabanındaki geçmiş kayıtlar değiştirilmez. iPhone canlı testi gereklidir.
