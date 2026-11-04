@@ -1,6 +1,1 @@
-Özcan Tarım Mobil V3.1.8 – Birleşik faaliyet güvenlik düzeltmesi
-- Kullanılmayan girdi 0 iken malzeme seçimi zorunlu değil; kullanılan her girdi için seçim zorunlu.
-- Geçersiz tarih, miktar, stok hareketi ve aşırı büyük tüketim için koruma.
-- Tek IndexedDB transaction: tüm stok düşümleri ve giderler birlikte kaydolur veya birlikte iptal edilir.
-- Geçmiş veriler ve veri şeması değiştirilmez.
-- Canlı iPhone/FIFO testi henüz yapılmadı. Önce JSON yedeği alın.
+V3.1.9 – Hasat verimi (kg/da) hesaplama yardımcısı, sezonluk ürün stok/satış önizlemesi. Eski hasat ve satış kayıt şeması değiştirilmedi. Canlı iPhone testi gereklidir.

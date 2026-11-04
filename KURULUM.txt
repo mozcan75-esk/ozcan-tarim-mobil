@@ -1,4 +1,1 @@
-Önce iPhone uygulamasından JSON yedeği alın ve telefon dışında saklayın.
-Bu ZIP içindeki 12 dosyayı GitHub Pages deposunun kök dizinine yükleyin (mevcut dosyaların üzerine). Commit changes yapın.
-Safari ile siteyi internet açıkken açın, ardından ana ekrana eklenen uygulamayı yeniden başlatın.
-Gerçek kayıt yerine önce sıfır girdili satırları ve önizlemeyi kontrol edin. Test sürümüdür; Windows ile otomatik eşitlenmez.
+Önce iPhone uygulamasından JSON yedeği alın. ZIP içindeki tüm dosyaları GitHub Pages deposunun köküne yükleyin ve Commit yapın. Safari ile siteyi açıp güncellemeyi kontrol edin. Gerçek kayıt girmeden önce önizlemeleri test edin.
