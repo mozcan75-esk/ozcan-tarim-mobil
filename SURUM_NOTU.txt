@@ -1,1 +1,1 @@
-V3.2.5: Salt okunur parsel bazlı ürün ve balya stok/gelir karşılaştırması; işlem giderleri ve ayrı izlenen hizmet/icar kalemleri. Kesin net kâr değildir. Mevcut kayıtlar değişmez.
+V3.2.6: Parsel kârlılık tablosunda sezonluk işlenen alanı bulunmayan parsellerin kayıtlı alanını * ile gösterir. Bu değer tahmindir; kesin işlenen alan değildir. P010 icar doğru tutarı mobil yedekte zaten 14.704 TL olduğundan mobil kayıtlara müdahale edilmez. Bilgisayar DB düzeltmesi ayrı ve özel dosyadır.

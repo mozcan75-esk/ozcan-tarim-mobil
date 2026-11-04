@@ -24,17 +24,17 @@
   const table=document.createElement('table');table.className='profit-table';const header=document.createElement('tr');
   for(const label of ['Parsel','Alan (da)','Hasat (kg)','Ürün satış (kg)','Ürün geliri (₺)','Balya üretim','Balya satış','Balya kalan','Balya geliri (₺)','Kayıtlı işlem gideri (₺)','Hizmet gideri (ayrı) (₺)','İcar (ayrı) (₺)','Satışlar − işlem gideri (₺)','Fark/da (₺)']){const th=document.createElement('th');th.textContent=label;header.append(th)}table.append(header);
   let totalIncome=0,totalCost=0,unmatched=0;
-  for(const code of codes){const a=areas.find(x=>x.parcel_code===code),da=a?n(a.worked_area_da):0;
+  for(const code of codes){const a=areas.find(x=>x.parcel_code===code),parcel=parcels.find(x=>x.code===code),da=a?n(a.worked_area_da):(parcel?n(parcel.area_m2)/1000:0),areaEstimated=!a&&!!parcel;
    const hkg=sum(hs.filter(x=>x.parcel_code===code),x=>x.quantity),made=sum(bs.filter(x=>x.parcel_code===code),x=>x.quantity||x.bale_count),sold=sum(bss.filter(x=>x.parcel_code===code),x=>x.quantity),baleIncome=sum(bss.filter(x=>x.parcel_code===code),x=>x.total);
    const cropRevenue=cropIncome.get(code)||0,expense=sum(baseOps.filter(x=>x.parcel_code===code&&x.direction==='Gider'),x=>x.amount),incomeOps=sum(baseOps.filter(x=>x.parcel_code===code&&x.direction==='Gelir'),x=>x.amount);
    const serviceExpense=sum(sv.filter(x=>x.parcel_code===code),x=>x.amount),rentExpense=sum(rs.filter(x=>x.parcel_code===code),x=>x.total_amount);
    const income=cropRevenue+baleIncome+incomeOps,delta=income-expense;totalIncome+=income;totalCost+=expense;
-   const values=[code,da?fmt(da):'—',fmt(hkg),fmt(cropSold.get(code)||0),fmt(cropRevenue),fmt(made),fmt(sold),fmt(made-sold),fmt(baleIncome),fmt(expense),fmt(serviceExpense),fmt(rentExpense),fmt(delta),da?fmt(delta/da):'—'];
+   const values=[code,da?(fmt(da)+(areaEstimated?'*':'')):'—',fmt(hkg),fmt(cropSold.get(code)||0),fmt(cropRevenue),fmt(made),fmt(sold),fmt(made-sold),fmt(baleIncome),fmt(expense),fmt(serviceExpense),fmt(rentExpense),fmt(delta),da?fmt(delta/da):'—'];
    const row=document.createElement('tr');for(const value of values){const cell=document.createElement('td');cell.textContent=value;row.append(cell)}table.append(row);
   }
   const wrap=document.createElement('div');wrap.className='profit-scroll';wrap.append(table);report.replaceChildren(wrap);
   unmatched=sum(baseOps.filter(x=>!x.parcel_code),x=>x.direction==='Gider'?x.amount:0);
-  summary.textContent=`Sezon ${season} · Parsele bağlanan satış ve işlem gelirleri ${fmt(totalIncome)} ₺ · Parsele bağlanan işlem giderleri ${fmt(totalCost)} ₺ · Parselsiz işlem gideri ${fmt(unmatched)} ₺ · Parsele bağlanamayan ürün satışı ${fmt(unassigned)} ₺. Hizmet ve icar tutarları, işlem giderlerinde bulunabilecekleri için ayrıca gösterilir fakat fark hesabına yeniden eklenmez. Bakım, destek dağıtımı ve diğer genel giderler bu fark hesabına dahil değildir. Bu tablo kesin net kâr değildir.`;
+  summary.textContent=`Sezon ${season} · Parsele bağlanan satış ve işlem gelirleri ${fmt(totalIncome)} ₺ · Parsele bağlanan işlem giderleri ${fmt(totalCost)} ₺ · Parselsiz işlem gideri ${fmt(unmatched)} ₺ · Parsele bağlanamayan ürün satışı ${fmt(unassigned)} ₺. Hizmet ve icar tutarları, işlem giderlerinde bulunabilecekleri için ayrıca gösterilir fakat fark hesabına yeniden eklenmez. * işaretli alanlar, sezonluk işlenen alan kaydı bulunmadığından parselin kayıtlı alanından alınmıştır; gerçek işlenen alanı temsil etmeyebilir. Bakım, destek dağıtımı ve diğer genel giderler bu fark hesabına dahil değildir. Bu tablo kesin net kâr değildir.`;
  }
  seasonFilter.addEventListener('change',()=>update().catch(console.error));
  const prior=window.renderExtended;if(typeof prior==='function')window.renderExtended=async function(...args){const result=await prior.apply(this,args);await update();return result};

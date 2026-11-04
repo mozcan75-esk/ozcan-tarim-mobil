@@ -1,1 +1,1 @@
-Önce JSON yedeği alın. Tüm dosyaları GitHub Pages depo köküne yükleyin. Safari ile güncellemeyi açın. Raporlar ekranında V3.2.5 parsel tablosunu inceleyin; kayıt girmeden doğrulayın.
+iPhone uygulamasından önce JSON yedeği alın. Bu ZIP yalnızca mobil uygulama kodudur. GitHub Pages köküne ZIP içindeki dosyaları yükleyin. ÖZEL BİLGİ: Bilgisayar .db dosyasını ve iPhone JSON yedeğini ASLA GitHub deposuna yüklemeyin.
