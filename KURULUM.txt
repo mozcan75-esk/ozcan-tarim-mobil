@@ -1,1 +1,6 @@
-iPhone uygulamasından önce JSON yedeği alın. Bu ZIP yalnızca mobil uygulama kodudur. GitHub Pages köküne ZIP içindeki dosyaları yükleyin. ÖZEL BİLGİ: Bilgisayar .db dosyasını ve iPhone JSON yedeğini ASLA GitHub deposuna yüklemeyin.
+ÖZCAN TARIM MOBİL V3.4.2
+1. ÖNCE uygulamanın Yedek ekranından JSON yedeği alın, iPhone dışına da saklayın.
+2. Bu ZIP dosyasının içindeki dosyaları GitHub Pages deponuzun KÖK dizinine yükleyin ve Commit changes yapın.
+3. Safari'de https://mozcan75-esk.github.io/ozcan-tarim-mobil/ adresini açıp yenileyin.
+4. Ana ekrandaki uygulamayı SİLMEYİN; iPhone IndexedDB verileri kaybolabilir.
+5. Yedekler otomatik olarak PC veritabanına işlenmez.
