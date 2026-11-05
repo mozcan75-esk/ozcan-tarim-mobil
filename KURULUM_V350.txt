@@ -1,0 +1,3 @@
+ÖZCAN TARIM MOBİL V3.5.0
+Mevcut iPhone uygulamasından önce JSON yedeği alın. ZIP içeriğini GitHub Pages depo köküne yükleyin. Uygulamayı silmeyin.
+PC Tam Yedek / Aktarım sayfasından alınan JSON dosyası iPhone Yedek Yükle ile açılabilir. Yükleme mobildeki mevcut verilerin tamamını değiştirir.
