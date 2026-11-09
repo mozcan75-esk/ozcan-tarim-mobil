@@ -1,0 +1,1 @@
+V3.5.3: Tüm temel modüllerde aranabilir, başlıklı kayıt tabloları ve Düzenle düğmeleri. Bağlı stok/hasat/satış/ödeme kayıtlarında hesap güvenliği nedeniyle değişiklik kısıtlıdır; bu kayıtlar görüntülenir. Önce JSON yedeği alın.
