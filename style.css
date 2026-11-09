@@ -123,24 +123,5 @@ main>.notice{font-size:12px;padding:9px 11px;margin:0 0 10px}
 
 /* V3.5.2 Parsel listesi */
 .parcel-table-wrap{overflow-x:auto;max-width:100%;border:1px solid #dce6df;border-radius:12px}.parcel-table{border-collapse:collapse;width:100%;min-width:590px;font-size:14px}.parcel-table th,.parcel-table td{padding:11px 9px;text-align:left;border-bottom:1px solid #e6ece8;vertical-align:middle}.parcel-table th{background:#eaf3ed;position:sticky;top:0}.parcel-table tbody tr:nth-child(even){background:#f8fbf9}.parcel-table tr[hidden]{display:none}.parcel-edit-btn{padding:7px 11px;white-space:nowrap}.parcel-actions{display:flex;gap:8px;flex-wrap:wrap}.parcel-actions button{flex:1}#parcelForm input[readonly]{background:#edf1ed;color:#4b5c52}
-
-/* V3.5.5 mobile record cards */
-.record-browser{margin:18px 0;padding:12px;border:1px solid #cbd5d1;border-radius:12px}.record-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}.record-head h3{margin:4px 0}.record-search{max-width:260px}.record-scroll{overflow-x:auto;max-height:440px;overflow-y:auto}.record-table{width:100%;border-collapse:collapse;font-size:13px}.record-table th,.record-table td{border-bottom:1px solid #dde5df;padding:9px 7px;text-align:left;white-space:nowrap}.record-table th{position:sticky;top:0;background:#edf5ee}.record-table tr[hidden]{display:none}.record-overlay:not([hidden]){position:fixed;inset:0;z-index:100;background:#0009;overflow:auto;padding:20px 10px}.record-dialog{max-width:560px;margin:20px auto;background:white;color:#1c2920;border-radius:14px;padding:20px}.record-dialog label{display:block;margin:9px 0}.record-dialog input,.record-dialog select{width:100%;box-sizing:border-box}.record-dialog button{margin:8px 5px 4px 0}
-/* V3.5.4: okunabilir, parsel tarzı mobil kayıt kartları */
-.record-detail{display:grid;gap:8px;padding:12px;background:#f2f7f3;border-radius:10px;overflow-wrap:anywhere}
-@media(max-width:700px){
- .record-browser{padding:10px;margin:14px 0;border-radius:14px}
- .record-head{display:block}.record-head h3{font-size:17px;margin:4px 0 10px}
- .record-search{max-width:none;width:100%;box-sizing:border-box;min-height:44px;margin-bottom:12px}
- .record-scroll{overflow:visible;max-height:none}
- .record-table,.record-table tbody{display:block;width:100%}
- .record-table thead{display:none}
- .record-table tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px;background:#fff;border:1px solid #d6e2d9;border-radius:13px;padding:13px;margin-bottom:11px;box-shadow:0 2px 5px #1b3a2410}
- .record-table tr[hidden]{display:none}
- .record-table td{display:block;min-width:0;padding:0;border:0;white-space:normal;overflow-wrap:anywhere;font-size:14px;font-weight:600;color:#23372a}
- .record-table td::before{content:attr(data-label);display:block;font-size:11px;color:#65796c;font-weight:400;margin-bottom:3px}
- .record-table td.record-actions{grid-column:1/-1;border-top:1px solid #e4ebe5;padding-top:10px;text-align:right}
- .record-table td.record-actions::before{display:none}
- .record-actions button{min-height:42px;min-width:110px}
- .record-dialog{margin:8px auto;padding:16px}
-}
+/* V3.5.6 real record cards */
+.record356Section{margin:22px 0;border-top:2px solid #cbded1;padding-top:12px}.record356Block{margin:16px 0 26px}.record356Block>input{width:100%;box-sizing:border-box;margin:8px 0 12px;padding:12px;border:1px solid #aabbb0;border-radius:10px}.record356List{display:grid;gap:12px}.record356Card{padding:14px;border:1px solid #c5d9cb;border-radius:14px;background:#fff;box-shadow:0 2px 6px #102a1710;overflow-wrap:anywhere}.record356Card>strong{display:block;margin-bottom:10px}.record356Grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.record356Grid>div{font-weight:600;min-width:0}.record356Grid small{display:block;font-weight:400;color:#56675c;margin-bottom:3px}.record356Card details{margin:12px 0}.record356Card details p{margin:5px 0;font-size:13px}.record356Card button{margin-top:8px}.record356Card[hidden]{display:none}#record356Dialog{width:min(92vw,540px);max-height:85vh;overflow:auto;border:1px solid #b4cbbb;border-radius:14px;padding:18px}#record356Dialog::backdrop{background:#0007}#record356Fields label{display:block;margin:12px 0}#record356Fields input{display:block;width:100%;box-sizing:border-box;padding:11px;margin-top:5px}.record-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}.record-hint{font-size:13px;color:#655a3b}
