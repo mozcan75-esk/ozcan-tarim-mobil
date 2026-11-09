@@ -1,6 +1,6 @@
 'use strict';
 (()=>{
-const groups={operations:['operations','stockMoves'],harvest:['harvests','sales'],rents:['rents','rentPayments'],supports:['supports','maintenance'],services:['services','servicePayments'],baleWarehouse:['bales','baleSales']};
+const groups={operations:['operations','stockMoves'],harvest:['harvests','sales'],rents:['rents','rentPayments'],supports:['supports'],maintenance:['maintenance'],services:['services','servicePayments'],baleWarehouse:['bales','baleSales']};
 const labels={inputs:'Girdi tanımları',stockMoves:'Girdi depo hareketleri',operations:'Tarla işlemleri',harvests:'Hasat kayıtları',sales:'Ürün satışları',rents:'İcar sözleşmeleri',rentPayments:'İcar ödemeleri',supports:'Destekler',maintenance:'Bakım kayıtları',services:'Hizmetler',servicePayments:'Hizmet ödemeleri',bales:'Balya kayıtları',baleSales:'Balya satışları'};
 const fieldLabels={date:'Tarih',op_date:'Tarih',parcel_code:'Parsel',op_type:'İşlem',kind:'Tür',name:'Ad',item:'Malzeme / Ürün',input_id:'Girdi',crop:'Ürün',quantity:'Miktar',unit:'Birim',unit_price:'Birim fiyat',amount:'Tutar',total:'Toplam',cost:'Gider',season:'Sezon',description:'Açıklama',area_da:'Alan (da)',per_da:'Birim/da',landlord:'Mal sahibi',rate_per_da:'İcar/da',support_type:'Destek türü',machine:'Makine',direction:'Yön',id:'Kayıt kimliği'};
 const preferred=['date','op_date','season','parcel_code','op_type','kind','name','item','crop','input_id','landlord','machine','support_type','description','quantity','unit','area_da','unit_price','amount','total','cost'];

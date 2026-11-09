@@ -10,7 +10,7 @@
     if(op){for(const h of op.querySelectorAll('h3,h4')){if(/son işlemler|işlem kayıtları/i.test(h.textContent))h.classList.add('legacy359-hidden');}}
   };
   const rename=()=>{
-    const labels={operations:'Tarla faaliyetleri',harvest:'Hasat ve ürün satışları',rents:'İcar ve ödemeler',supports:'Destek ve bakım kayıtları',services:'Hizmet ve ödemeler',baleWarehouse:'Balya kayıtları ve satışlar'};
+    const labels={operations:'Tarla faaliyetleri',harvest:'Hasat ve ürün satışları',rents:'İcar ve ödemeler',supports:'Destek gelir kayıtları',maintenance:'Bakım gider kayıtları',services:'Hizmet ve ödemeler',baleWarehouse:'Balya kayıtları ve satışlar'};
     for(const [id,label] of Object.entries(labels)){
       const sec=document.getElementById(id);const title=sec?.querySelector('.records357 > h3');if(title)title.textContent=label;
     }
