@@ -1,0 +1,1 @@
+V3.5.5: V3.5.2 kararlı taban esas alınmıştır. Kayıt kartları, arama ve güvenli kayıt düzenleme eklenmiştir. Stok ve muhasebeye bağlı kayıtlar salt okunur. Önce JSON yedeği alın. iPhone cihaz testi yapılmamıştır.
