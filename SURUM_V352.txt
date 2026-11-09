@@ -1,0 +1,1 @@
+Özcan Tarım Mobil V3.5.2 — Parsel detayları ve düzenleme. Mevcut IndexedDB verileri silinmez. Önce JSON yedeği alın. ZIP içeriğini GitHub Pages deposu köküne yükleyin. Kod değiştirme kapalıdır, ilişkili işlemler korunur. Diğer modüller V3.5.0 ile aynıdır.
