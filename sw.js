@@ -1,6 +1,6 @@
 // V3.1.3: network-first navigation and stale-while-revalidate assets.
-const CACHE = 'ozcan-test-v353';
-const FILES = ['./index.html', './style.css?v=353', './app.js?v=353', './combined318.js?v=353', './extended.js?v=353', './dashboard.js?v=353', './ui314.js?v=353', './ui315.js?v=353', './harvest319.js?v=353', './crop320.js?v=353', './season322.js?v=353', './harvest323.js?v=353', './bales324.js?v=353', './profit325.js?v=353', './record_editor.js?v=353', './manifest.webmanifest'];
+const CACHE = 'ozcan-test-v354';
+const FILES = ['./index.html', './style.css?v=354', './app.js?v=354', './combined318.js?v=354', './extended.js?v=354', './dashboard.js?v=354', './ui314.js?v=354', './ui315.js?v=354', './harvest319.js?v=354', './crop320.js?v=354', './season322.js?v=354', './harvest323.js?v=354', './bales324.js?v=354', './profit325.js?v=354', './record_editor.js?v=354', './manifest.webmanifest'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)).then(() => self.skipWaiting()));
 });

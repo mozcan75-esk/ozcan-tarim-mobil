@@ -1,0 +1,1 @@
+V3.5.4: Mobil kayıt listeleri parsel benzeri iki sütunlu kartlara dönüştürüldü. Arama ve kayıt düzenleme korundu. Bağlı kayıtlar görüntülenebilir; finansal/stok etkili değişiklikler güvenlik nedeniyle kilitli. Önce JSON yedeği alın.
