@@ -1,0 +1,20 @@
+ÖZCAN TARIM MOBİL V5.3.2 - TEMİZ GITHUB PAGES PAKETİ
+
+Bu pakette sadece uygulamanın çalışması için gereken 26 dosya bulunur.
+Eski SURUM_*.txt, KURULUM_*.txt ve kullanılmayan mobile401.js dosyaları çıkarıldı.
+
+TESPİT EDİLEN HATA: Önceki V5.3.1 paketinin ana sayfasındaki İşletme özeti
+başlığında yanlışlıkla V5.3 yazıyordu. Bu nedenle sürüm yüklenmiş olsa da
+kullanıcı V5.3 görüyordu. V5.3.2'de tüm görünür sürüm etiketleri düzeltildi.
+
+YÜKLEME:
+1) GitHub Pages'ın kullandığı klasörde (genellikle depo kökü) mevcut
+   index.html ile aynı seviyeye ZIP içindeki dosyaları yükleyin.
+2) GitHub üzerinde Commit changes yapın.
+3) GitHub Pages Actions/Deployments tamamlanmasını bekleyin.
+4) Safari'de normal web adresine ?v=532 ekleyerek açın.
+5) Üstte ve İşletme özeti bölümünde V5.3.2 görünmeli.
+6) Yedek ve Ayarlar > JSON yedeği hazırla > oluşan bağlantıya dokunun.
+
+UYARI: Uygulamayı silmeyin, Safari site verilerini temizlemeyin.
+Veriler IndexedDB'de tutulur; ZIP dosyasının içinde bulunmaz.
