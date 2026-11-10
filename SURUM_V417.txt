@@ -1,0 +1,1 @@
+V4.0.17: Kilogram raporunun yüklenmesini engelleyen eksik JS dosyası bağlantısı düzeltildi. Ürün listesi varsayılan ve Ayarlar ürünlerini içerir; fiyat girişi hasattan bağımsızdır. Reis çeşidi Buğday olarak eşleştirilir. Diğer çeşitler için eşleştirme gerekebilir.
