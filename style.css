@@ -161,3 +161,6 @@ main>.notice{font-size:12px;padding:9px 11px;margin:0 0 10px}
 .v406-action[hidden]{display:none}.v404-tiles button:focus-visible,.v406-action:focus-visible{outline:3px solid #4e9e6d;outline-offset:2px}
 
 #settings407{position:absolute;right:12px;top:8px;z-index:15;width:auto;padding:8px 11px;border-radius:10px;background:#f1f7f1;color:#185c3d;border:1px solid #c5d7c9;font-weight:700}.settings407-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 4px;border-bottom:1px solid #dce8df}.settings407-row button{width:auto;font-size:12px;padding:7px 10px}#settings407Panel details{margin:12px 0}#settings407Panel form{display:grid;gap:10px;margin:12px 0}
+
+/* V4.0.8: visible settings access in main area */
+.settings408-bar{display:flex;justify-content:flex-end;margin:0 0 12px;position:relative;z-index:20}.settings408-bar #settings407{position:static;display:inline-flex;align-items:center;justify-content:center;min-height:44px;width:auto;padding:10px 14px;background:#176c43;color:#fff;border:1px solid #176c43;font-size:14px;box-shadow:0 2px 7px #0002}
