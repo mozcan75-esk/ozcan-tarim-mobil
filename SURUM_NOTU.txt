@@ -1,1 +1,1 @@
-V4.0.11: Hasat ve birleşik hasat ekranlarında tanımlı ürün seçimi; eski tek malzeme kullanımında girdi türü filtresi. Birleşik ekim/gübreleme mevcut tür filtrelerini korur. Satış yalnızca stoktaki ürünlerden yapılır. Veri şeması değiştirilmedi.
+V4.0.12: Ayarlarda yeni girdi eklendiğinde veya adı değiştirildiğinde Ekim/Gübreleme birleşik faaliyet listeleri yenilenir. Seçili malzeme ve oranlar mümkün olduğunca korunur. Yeni tanımlar stok alımıyla aynı IndexedDB girdi listesindedir. Muhasebe ve stok yazma kodu değiştirilmedi.
