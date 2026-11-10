@@ -1,1 +1,1 @@
-V4.0.4: Ana, Tarlalar, Giderler, İşlemler, Gelirler, Raporlar. Depo ana sayfada özet ve Giderler > Girdi alımı altında erişilebilir. Eski formlar, kayıtlar ve hesaplamalar korunmuştur. Tek kayıtla yeni otomatik muhasebe bağlantısı eklenmemiştir.
+V4.0.5: V4.0.4 ekran kilitlenmesi olasiligina neden olan gezinme izleyicisi kaldirildi. Altı ana menü ve önceki veri yapısı korundu. Mevcut cihaz kayıtları ancak aynı site/origin depolamasında görünür; yeni siteye otomatik aktarılmaz.
