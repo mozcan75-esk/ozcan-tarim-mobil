@@ -181,3 +181,6 @@ main>.notice{font-size:12px;padding:9px 11px;margin:0 0 10px}
 .v404-bottom button[data-tab="home"] small{font-size:9px}
 .v404-bottom button.selected,.v404-bottom button.v4-active.selected{background:#176c43!important;color:#fff!important}
 .v404-bottom button.selected span,.v404-bottom button.selected small{color:#fff!important;opacity:1!important;visibility:visible!important}
+/* V4.0.11 - catalogue-backed harvest selectors */
+.catalog411-hidden{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important;}
+.catalog411-crop,.catalog411-type{width:100%;max-width:100%;}
