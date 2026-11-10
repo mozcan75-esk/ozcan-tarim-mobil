@@ -1,8 +1,8 @@
  'use strict';
 // V4.0.14: read-only product-equivalent view; no changes to accounting or IndexedDB.
 (()=>{
- const root=document.getElementById('productEquivalent414');if(!root)return;
- const cropEl=document.getElementById('eqCrop414'),priceEl=document.getElementById('eqPrice414'),saveEl=document.getElementById('eqSave414'),info=document.getElementById('eqPriceInfo414'),out=document.getElementById('eqResults414'),seasonEl=document.getElementById('seasonFilter');
+ const root=document.getElementById('productEquivalent415');if(!root)return;
+ const cropEl=document.getElementById('eqCrop415'),priceEl=document.getElementById('eqPrice415'),saveEl=document.getElementById('eqSave415'),info=document.getElementById('eqPriceInfo415'),out=document.getElementById('eqResults415'),seasonEl=document.getElementById('seasonFilter');
  const num=v=>Number(v)||0, key=v=>String(v||'').trim().toLocaleLowerCase('tr-TR'),sk=v=>String(v||'').replace(/\D/g,''),valid=x=>!num(x.is_cancelled),fmt=x=>Number(x).toLocaleString('tr-TR',{maximumFractionDigits:2}),sum=(xs,fn)=>xs.reduce((a,x)=>a+num(fn(x)),0);
  const prefs=()=>{try{return JSON.parse(localStorage.getItem('ozcan_eq_prices_414')||'{}')}catch{return {}}};
  const money=x=>fmt(x)+' ₺';let data=null,token=0;
