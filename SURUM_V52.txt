@@ -1,0 +1,1 @@
+Mobil V5.2: İşlemler sayfasında tek işlem türü seçimi. Ekim, gübreleme, ilaçlama, toprak işleme ve hasat alanları dinamik açılır. V5.1 kayıt motorları ve V5.0 menüleri korunmuştur. JSON yedeği alın.

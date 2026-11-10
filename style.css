@@ -184,3 +184,6 @@ main>.notice{font-size:12px;padding:9px 11px;margin:0 0 10px}
 /* V4.0.11 - catalogue-backed harvest selectors */
 .catalog411-hidden{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important;}
 .catalog411-crop,.catalog411-type{width:100%;max-width:100%;}
+
+/* V5.2: single activity entry */
+#v52CombinedWrap[hidden],#v51HarvestSection[hidden]{display:none!important}
