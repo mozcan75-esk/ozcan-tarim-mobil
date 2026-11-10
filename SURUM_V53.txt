@@ -1,0 +1,1 @@
+V5.3: Tek tarla işlemi ekranında girdi deposundaki işlem tarihli stok miktarı ve gerekli tüketim görüntülenir. Yetersiz stok uyarısı; mevcut FIFO kayıt doğrulaması korunur.
