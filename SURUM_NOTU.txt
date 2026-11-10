@@ -1,1 +1,5 @@
-V4.0.13: Giderler > Girdi Alımı formunda önce girdi türü, sonra Ayarlar tanımlarından malzeme seçilir. Stok ve muhasebe kodları değiştirilmedi.
+Özcan Tarım Mobil V5.0
+Kararlı temel: V4.0.13.
+V4.0.14–V4.0.17 arasındaki çalışmayan Ürün Karşılığı Parsel Kârlılığı denemeleri dahil değildir.
+Yalnızca sürüm etiketi ve önbellek anahtarı güncellenmiştir.
+Kurulumdan önce JSON yedeği alın.
