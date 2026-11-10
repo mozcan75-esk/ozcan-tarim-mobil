@@ -1,0 +1,9 @@
+(function(){'use strict';
+const modes=['easy','advanced'];let mode=localStorage.getItem('ozcan-ui-mode')==='advanced'?'advanced':'easy';
+const easy=document.getElementById('modeEasy'),advanced=document.getElementById('modeAdvanced'),modules=document.getElementById('v4Modules');
+function setMode(next){if(!modes.includes(next))return;mode=next;localStorage.setItem('ozcan-ui-mode',next);easy.classList.toggle('active',next==='easy');advanced.classList.toggle('active',next==='advanced');document.body.dataset.uiMode=next;document.querySelectorAll('[data-advanced="1"]').forEach(el=>el.hidden=next==='easy');}
+easy.addEventListener('click',()=>setMode('easy'));advanced.addEventListener('click',()=>setMode('advanced'));setMode(mode);
+const finance=document.getElementById('v4Finance');finance.addEventListener('click',()=>{modules.open=true;modules.scrollIntoView({behavior:'smooth',block:'start'});document.querySelectorAll('.v4-module-grid [data-tab="rents"],.v4-module-grid [data-tab="supports"],.v4-module-grid [data-tab="maintenance"]').forEach(el=>el.classList.add('finance-link'));});
+const home=document.getElementById('home');if(home){const guide=document.createElement('div');guide.className='v4-guide';guide.innerHTML='<strong>Hızlı başlangıç</strong><p>Yukarıdaki dört kısa yoldan işlem seçin. Tüm kayıtlarınız ve hesaplamalarınız mevcut sistemde korunur.</p>';home.prepend(guide);}
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{if(modules)modules.open=false;document.querySelectorAll('.v4-bottom button').forEach(n=>n.classList.toggle('v4-active',n.dataset.tab===b.dataset.tab));}));
+})();
