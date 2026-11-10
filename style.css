@@ -169,3 +169,15 @@ main>.notice{font-size:12px;padding:9px 11px;margin:0 0 10px}
 .settings408-bar{margin:0 0 6px;min-height:40px}
 .settings408-bar #settings407{width:44px;height:44px;min-height:44px;padding:0;border-radius:50%;font-size:24px;line-height:1;box-shadow:0 2px 7px #0002}
 .catalog409-tip{font-size:12px;color:#456;display:block;margin:4px 0 8px}
+
+/* V4.0.10: settings integrated into green brand card; home tab legible */
+.settings408-bar{display:none!important}
+.dashboard-panel .dash-top{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"brand settings" "season season";align-items:center;gap:8px 10px;padding:13px 14px;margin-top:0}
+.dashboard-panel .dash-top .dash-brand{grid-area:brand;min-width:0}
+.dashboard-panel .dash-top .dash-settings{grid-area:settings;display:flex;align-items:center;justify-content:center;width:42px;height:42px;min-height:42px;padding:0;border:1px solid #ffffff55;border-radius:11px;background:#ffffff1e;color:white;font-size:25px;line-height:1;box-shadow:none}
+.dashboard-panel .dash-top label{grid-area:season;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;max-width:none;margin:0;color:white;font-weight:600}
+.dashboard-panel .dash-top select{width:130px;max-width:55%;margin:0}
+.v404-bottom button[data-tab="home"] .nav-home-icon{font-family:Arial,sans-serif;font-size:26px;font-weight:700;line-height:1.1;display:block}
+.v404-bottom button[data-tab="home"] small{font-size:9px}
+.v404-bottom button.selected,.v404-bottom button.v4-active.selected{background:#176c43!important;color:#fff!important}
+.v404-bottom button.selected span,.v404-bottom button.selected small{color:#fff!important;opacity:1!important;visibility:visible!important}
