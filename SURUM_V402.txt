@@ -1,0 +1,1 @@
+V4.0.2: Ana sayfadan İşletme Yönetimi başlığı, üst hızlı işlem bağlantıları, Hızlı İşlemler kartı ve hızlı başlangıç açıklaması kaldırıldı. İşletme özeti, Tüm bölümler ve işlemler ve alt 5 sekme korundu. Veri tabanı ve hesaplamalar değişmedi.
