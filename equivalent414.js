@@ -17,7 +17,11 @@
   const operations=sourceOps.concat(ops.filter(x=>same(x)&&!String(x.id||'').startsWith('pc-op-')&&!sourceOps.some(y=>String(y.id)===String(x.id))));
   const hs=harvests.filter(same),ss=sales.filter(same),sup=supports.filter(same);
   const areas=source.filter(x=>x.table==='parcel_season_areas').map(x=>x.record).filter(same);
-  const crops=[...new Set([...hs.map(cropOf),...ss.map(cropOf)].filter(Boolean))].sort((a,b)=>a.localeCompare(b,'tr'));
+  // Hasat beklenmeden, ekim kayıtlarındaki tohum adından da ürün tespit edilir.
+  const known=['Buğday','Arpa','Yulaf','Çavdar','Mısır','Ayçiçeği','Mercimek','Nohut','Tritikale'];
+  const cropFromName=name=>known.find(c=>key(name).includes(key(c)))||'';
+  const sowCrops=operations.filter(x=>/ekim|tohum/i.test(String(x.op_type||'')+' '+String(x.item||''))).map(x=>cropFromName(x.item));
+  const crops=[...new Set([...hs.map(cropOf),...ss.map(cropOf),...sowCrops].filter(Boolean))].sort((a,b)=>a.localeCompare(b,'tr'));
   const old=cropEl.value;cropEl.replaceChildren(new Option('Ürün seçin',''));crops.forEach(option);cropEl.value=crops.includes(old)?old:(crops[0]||'');
   data={season,parcels,operations,hs,ss,sup,areas,inputs,moves};updatePrice();render();
  }
@@ -40,9 +44,9 @@
    const seedKg=sum(sow.filter(x=>/tohum/i.test(String(x.item||''))),x=>x.quantity);
    const allocations=ss.flatMap(x=>(x.allocations||[]).filter(a=>a.parcel_code===code&&key(cropOf(x))===key(crop)).map(a=>({kg:num(a.quantity),unitPrice:num(x.unit_price)})));
    const soldKg=sum(allocations,x=>x.kg),soldValue=sum(allocations,x=>x.kg*x.unitPrice),salePrice=soldKg?soldValue/soldKg:0;
-   const net=harvestKg-cost/price+support/price;const cells=[code,da>0?fmt(da):'—',da>0?fmt(harvestKg/da):'—',da>0?fmt(cost/da):'—',da>0?fmt(cost/price/da):'—',da>0?fmt(support/price/da):'—',da>0?((net/da>=0?'+':'')+fmt(net/da)):'—',seedKg>0?fmt(harvestKg/seedKg)+' kat':'—',salePrice>0?fmt(salePrice):'—'];const tr=document.createElement('tr');cells.forEach((value,i)=>{const td=document.createElement('td');td.textContent=value;if(i===6)td.style.fontWeight='700';tr.append(td)});table.append(tr);shown++;
+   const net=harvestKg-cost/price+support/price;const cells=[code,da>0?fmt(da):'—',da>0?fmt(harvestKg/da):'—',da>0?fmt(cost/da):'—',da>0?fmt(cost/price/da):'—',da>0?fmt(support/price/da):'—',da>0?((net/da>=0?'+':'')+fmt(net/da)):'—',seedKg>0?fmt(harvestKg/seedKg)+' kat':'—',salePrice>0?fmt(salePrice):'—'];const tr=document.createElement('tr');cells.forEach((value,i)=>{const td=document.createElement('td');td.textContent=value;if(i===6){td.style.fontWeight='700';td.style.color=net<0?'#b91c1c':'#15803d';}tr.append(td)});table.append(tr);shown++;
   }
-  if(!shown){out.textContent='Bu ürün için parsel bağlantılı hasat veya açıkça tanımlanmış ekim kaydı bulunamadı.';return}
+  if(!shown){out.textContent='Bu ürün için eşleşen ekim veya hasat kaydı bulunamadı. Ekimde kullanılan tohumun adı ürün adını içermiyorsa (ör. yalnızca Reis), ürün eşleştirmesi yapılamaz. Ekim kaydının malzeme adını kontrol edin.';return}
   const wrap=document.createElement('div');wrap.className='profit-scroll';wrap.append(table);out.append(wrap);
   const note=document.createElement('p');note.className='perda-note';note.textContent=`Referans ${fmt(price)} ₺/kg. Net (kg/da) = hasat (kg/da) − kayıtlı işlem gideri / fiyat / da + parsele bağlı destek / fiyat / da. Hasat öncesi hasat=0 olduğundan sonuç negatiftir. Tohum gideri işlem giderine zaten dâhilse tekrar düşülmez. Satış fiyatı, referans fiyatıyla karşılaştırma içindir.`;out.append(note);
  }
