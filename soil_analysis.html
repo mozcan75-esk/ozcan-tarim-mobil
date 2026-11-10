@@ -1,0 +1,18 @@
+{% extends 'base.html' %}{% block content %}
+<section class="card"><h1>Toprak analizleri – {{parcel.code}} / {{parcel.name}}</h1>
+<form method="post" class="formgrid">
+<label>Analiz tarihi *<input type="date" name="analysis_date" value="{{today}}" required></label>
+<label>Laboratuvar<input name="laboratory"></label>
+<label>pH<input name="ph" type="number" step="any" min="0"></label>
+<label>Organik madde<input name="organic_matter" type="number" step="any" min="0"></label>
+<label>Fosfor<input name="phosphorus" type="number" step="any" min="0"></label>
+<label>Potasyum<input name="potassium" type="number" step="any" min="0"></label>
+<label>Kireç<input name="lime" type="number" step="any" min="0"></label>
+<label>EC / Tuzluluk<input name="ec" type="number" step="any" min="0"></label>
+<label class="wide">Not / birimler / yöntem<input name="notes" placeholder="Örn. P ve K: mg/kg, organik madde: %"></label>
+<div class="formactions"><button type="submit">Analizi kaydet</button></div></form>
+<p class="hint">Analiz sonuçlarının birimleri laboratuvara göre değişebilir; not alanına mutlaka birimlerini yazın.</p></section>
+<section class="card"><h2>Geçmiş analizler</h2><div class="tablewrap"><table><tr><th>Tarih</th><th>Laboratuvar</th><th>pH</th><th>Organik madde</th><th>P</th><th>K</th><th>Kireç</th><th>EC</th><th>Not</th></tr>
+{% for r in rows %}<tr><td>{{r.analysis_date}}</td><td>{{r.laboratory or '—'}}</td><td>{{r.ph if r.ph is not none else '—'}}</td><td>{{r.organic_matter if r.organic_matter is not none else '—'}}</td><td>{{r.phosphorus if r.phosphorus is not none else '—'}}</td><td>{{r.potassium if r.potassium is not none else '—'}}</td><td>{{r.lime if r.lime is not none else '—'}}</td><td>{{r.ec if r.ec is not none else '—'}}</td><td>{{r.notes or '—'}}</td></tr>
+{% else %}<tr><td colspan="9">Henüz analiz yok.</td></tr>{% endfor %}</table></div>
+<p><a href="{{url_for('edit_parcel',code=parcel.code)}}">Parsele dön</a></p></section>{% endblock %}

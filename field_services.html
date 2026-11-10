@@ -1,0 +1,21 @@
+{% extends 'base.html' %}{% block content %}
+<div class="pagehead"><div><h1>Balya ve nakliye iş kayıtları</h1><p class="muted">Hizmet burada gider ve borç oluşturur; ödemeler ayrı Ödemeler sayfasında yapılır.</p><p><a href="{{url_for('operations_page')}}">← Tarla işlemlerine dön</a></p></div></div>
+<p><a href="{{url_for('payments_page')}}">Ödemeler ve borçlar sayfasına git</a></p><section class="card"><h2>Yeni hizmet kaydı</h2><form method="post" class="formgrid">
+<input type="hidden" name="csrf_token" value="{{csrf}}"><input type="hidden" name="action" value="service">
+<label>Sezon<select name="season">{% for s in seasons %}<option>{{s}}</option>{% endfor %}</select></label>
+<label>Tarih<input type="date" name="service_date" value="{{today}}" required></label>
+<label>Parsel<select name="parcel_code" required><option value="">Seçin</option>{% for p in parcels %}<option value="{{p.code}}">{{p.code}} - {{p.name}}</option>{% endfor %}</select></label>
+<label>Hizmet türü<select name="service_type"><option>Balya</option><option>Nakliye</option><option>Biçerdöver</option></select></label>
+<label>İşlenen alan (da)<input name="area_da" type="number" step="any" min="0.001" required></label>
+<label>Ücret (TL/da)<input name="rate_da" type="number" step="any" min="0.01" required></label>
+<label>Hizmeti veren kişi/firma<input name="provider" placeholder="İsteğe bağlı"></label>
+
+<label class="wide">Açıklama<input name="note"></label><div class="formactions"><button>Hizmeti kaydet</button></div></form>
+<p class="hint">Balya ve nakliye için şimdilik TL/da kullanılır. Ton, kilogram veya balya başına ücret seçenekleri sonraki sürümde eklenebilir.</p>
+</section>
+<section class="card"><h2>Hizmet giderleri ve kalan borçlar</h2>
+<div class="tablewrap"><table><thead><tr><th>Tarih</th><th>Parsel</th><th>Hizmet</th><th>Kişi/Firma</th><th>TL/da</th><th>Toplam gider</th><th>Ödenen</th><th>Kalan borç</th><th>Ödeme</th></tr></thead><tbody>
+{% for c in charges %}<tr><td>{{c.service_date}}</td><td>{{c.parcel_code}}</td><td>{{c.service_type}}</td><td>{{c.provider}}</td><td>{{tr_num(c.rate_da,2)}}</td><td>{{tr_num(c.total_amount,2)}}</td><td>{{tr_num(c.paid,2)}}</td><td>{{tr_num(c.total_amount-c.paid,2)}}</td>
+<td><a href="{{url_for('payments_page')}}">Ödemeler</a></td></tr>
+{% else %}<tr><td colspan="9">Hizmet kaydı yok.</td></tr>{% endfor %}
+</tbody></table></div></section>{% endblock %}

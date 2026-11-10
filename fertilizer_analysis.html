@@ -1,0 +1,30 @@
+{% extends 'base.html' %}{% block content %}
+<section class="card"><h1>Gübre kullanım ve maliyet analizi · V1.5</h1>
+<p>Gübreleme işlemleri, Girdi Deposu'ndan seçilen ürün ve çeşit adına göre gruplandırılır. Yeni veri girişi gerekmez.</p>
+<form method="get" class="formgrid">
+<label>Sezon<select name="season">{% for s in seasons %}<option value="{{s}}" {% if s==season %}selected{% endif %}>{{s}}</option>{% endfor %}</select></label>
+<label>Parsel<select name="parcel"><option value="">Tüm parseller</option>{% for p in parcel_options %}<option value="{{p.code}}" {% if p.code==selected %}selected{% endif %}>{{p.code}} – {{p.name}}</option>{% endfor %}</select></label>
+<button type="submit">Analizi göster</button></form></section>
+<section class="card"><h2>Gübre çeşidine göre özet</h2>
+<div class="tablewrap"><table><thead><tr><th>Ürün</th><th>Çeşit</th><th>Parsel sayısı</th><th>İşlem</th><th>Alan (da)*</th><th>Kullanım</th><th>Kullanım / da*</th><th>Maliyet (TL)</th><th>Maliyet (TL/da)*</th></tr></thead><tbody>
+{% for r in summary %}<tr><td>{{r.product}}</td><td><b>{{r.detail}}</b></td><td>{{r.parcel_count}}</td><td>{{r.count}}</td>
+<td>{{tr_num(r.area,2)}}</td><td>{{tr_num(r.quantity,2)}} {{r.unit}}</td>
+<td>{{tr_num(r.quantity_da,2) if r.quantity_da is not none else '—'}} {{r.unit}}/da</td>
+<td>{{tr_num(r.cost,2)}}</td><td>{{tr_num(r.cost_da,2) if r.cost_da is not none else '—'}}</td></tr>
+{% else %}<tr><td colspan="9">Bu sezon için gübreleme işlemi bulunamadı.</td></tr>{% endfor %}
+</tbody></table></div></section>
+<section class="card"><h2>Parsel bazında gübre kullanımı</h2>
+<div class="tablewrap"><table><thead><tr><th>Parsel</th><th>Ekili ürün / tohum çeşidi</th><th>Gübre çeşidi</th><th>Alan (da)*</th><th>Kullanım</th><th>Kullanım / da*</th><th>Gübre gideri (TL)</th><th>Gider (TL/da)*</th><th>Hasat verimi (kg/da)**</th></tr></thead><tbody>
+{% for r in rows %}<tr><td>{{r.parcel}}</td><td>{% if r.crop %}{{r.crop}} / {{r.seed_variety}}{% else %}Belirsiz / karışık ekim{% endif %}</td>
+<td>{{r.product}} / {{r.detail}}</td><td>{{tr_num(r.area,2)}}</td>
+<td>{{tr_num(r.quantity,2)}} {{r.unit}}</td>
+<td>{{tr_num(r.quantity_da,2) if r.quantity_da is not none else '—'}} {{r.unit}}/da</td>
+<td>{{tr_num(r.cost,2)}}</td><td>{{tr_num(r.cost_da,2) if r.cost_da is not none else '—'}}</td>
+<td>{{tr_num(r.yield_da,2) if r.yield_da is not none else '—'}}</td></tr>
+{% else %}<tr><td colspan="9">Gübreleme kaydı yok.</td></tr>{% endfor %}
+</tbody></table></div>
+<p class="hint">* Dönüm başına değerler parselin kayıtlı toplam alanı üzerinden hesaplanır. Kısmi uygulama varsa uygulama alanı farklı olabilir. Bir gübre çeşidi bir parselde birden çok kullanılmışsa alan tek kez sayılır.</p>
+<p class="hint">** Hasat verimi yalnızca parselde tek bir tanımlanmış tohum çeşidi varsa gösterilir. Aynı parseldeki farklı gübre satırlarında aynı hasat verimi tekrar görülebilir; bunlar toplanmaz. Gübre ile verim arasında neden-sonuç ilişkisi kurulamaz.</p>
+<p class="hint">Maliyetler kaydedilmiş Gübreleme işlemi tutarlarından alınır. Önceki işlem tutarları geriye dönük yeniden hesaplanmaz; destekler ve ortak giderler dahil değildir. Birimler ayrı tutulur.</p></section>
+<p><a href="{{url_for('reports_page',season=season)}}">Genel raporlara dön</a></p>
+{% endblock %}

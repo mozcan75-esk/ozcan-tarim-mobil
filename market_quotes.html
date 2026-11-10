@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="pagehead"><div><h1>Piyasa fiyatları · V1.9.24</h1><p class="muted">Bu fiyatlar yalnızca Erken Alım Analizi içindir; yeni depo alımı veya muhasebe geliri oluşturmaz.</p></div></div>
+<section class="card">
+<h2>Yeni piyasa fiyatı kaydı</h2>
+<form method="post" id="quote-form">
+<input type="hidden" name="csrf_token" value="{{csrf}}">
+<div class="grid3">
+<label>Girdi / çeşit *<select id="product-select" required><option value="">Seçiniz</option>{% for p in products %}<option value="{{loop.index0}}">{{p.item}}{% if p.item_detail %} / {{p.item_detail}}{% endif %} ({{p.unit}})</option>{% endfor %}</select></label>
+<input type="hidden" name="item" id="quote-item"><input type="hidden" name="item_detail" id="quote-detail"><input type="hidden" name="unit" id="quote-unit">
+<label>Fiyat tarihi *<input type="date" name="price_date" value="{{prefill_date or today}}" required></label>
+<label>Birim piyasa fiyatı (TL) *<input type="number" name="unit_price" min="0" step="0.01" required></label>
+<label>Fiyat kaynağı / not<input type="text" name="source" maxlength="250" placeholder="Bayi, teklif, piyasa gözlemi..."></label>
+</div><p class="muted">Kullanım tarihindeki fiyatı girin. O gün için kayıt yoksa daha önceki en yakın fiyat kullanılır; sonraki tarihteki fiyat geriye uygulanmaz.</p>
+<button type="submit">Piyasa fiyatını kaydet</button>
+</form></section>
+<section class="card"><h2>Kaydedilmiş piyasa fiyatları</h2><div class="tablewrap"><table><thead><tr><th>Tarih</th><th>Girdi / çeşit</th><th>Birim</th><th>Fiyat (TL/birim)</th><th>Kaynak</th><th>İşlem</th></tr></thead><tbody>
+{% for q in quotes %}<tr><td>{{q.price_date}}</td><td>{{q.item}}{% if q.item_detail %} / {{q.item_detail}}{% endif %}</td><td>{{q.unit}}</td><td>{{tr_num(q.unit_price,2)}}</td><td>{{q.source or '—'}}</td><td><form method="post" onsubmit="return confirm('Bu piyasa fiyatı silinsin mi?')"><input type="hidden" name="csrf_token" value="{{csrf}}"><input type="hidden" name="action" value="delete"><input type="hidden" name="quote_id" value="{{q.id}}"><button type="submit">Sil</button></form></td></tr>
+{% else %}<tr><td colspan="6">Henüz piyasa fiyatı kaydı yok.</td></tr>{% endfor %}
+</tbody></table></div></section>
+<p><a href="{{url_for('early_purchase_report')}}">← Erken Alım Analizi'ne dön</a></p>
+<script>
+const quoteOptions=[{% for p in products %}{item:{{p.item|tojson}},detail:{{p.item_detail|tojson}},unit:{{p.unit|tojson}}}{% if not loop.last %},{% endif %}{% endfor %}];
+const quoteSelect=document.getElementById('product-select');
+quoteSelect.addEventListener('change',function(){const p=quoteOptions[Number(this.value)];document.getElementById('quote-item').value=p?p.item:'';document.getElementById('quote-detail').value=p?p.detail:'';document.getElementById('quote-unit').value=p?p.unit:'';});
+const prefill={item:{{prefill_item|tojson}},detail:{{prefill_detail|tojson}},unit:{{prefill_unit|tojson}}};
+const selectedIndex=quoteOptions.findIndex(p=>p.item===prefill.item && p.detail===prefill.detail && p.unit===prefill.unit);
+if(prefill.item && selectedIndex>=0){quoteSelect.value=String(selectedIndex);quoteSelect.dispatchEvent(new Event('change'));}
+
+</script>
+{% endblock %}

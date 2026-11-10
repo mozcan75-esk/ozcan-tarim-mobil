@@ -1,0 +1,98 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Özcan Tarım</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"><style>
+/* İki satırlı, açılır menüsüz gezinme */
+.top{display:flex;flex-direction:column;align-items:stretch;gap:0;padding:0 18px;background:#173e2c}
+.top-head{display:flex;align-items:center;gap:16px;min-height:55px}
+.top .brand{flex:0 0 auto;white-space:nowrap}
+.top .logout{margin-left:auto;white-space:nowrap}
+.top .nav{display:flex;flex-direction:column;align-items:stretch;gap:0;flex:1;min-width:0;margin:0;padding:0;border:0;background:transparent}
+.top .nav-row{display:flex;flex-wrap:wrap;align-items:center;gap:3px 12px;min-height:39px}
+.top .nav-row.secondary{border-top:1px solid rgba(255,255,255,.22)}
+.top .nav-row a{display:inline-block;color:#f5faf6;text-decoration:none;font-size:.88rem;font-weight:600;padding:8px 7px;white-space:nowrap;border-radius:6px}
+.top .nav-row a:hover,.top .nav-row a:focus-visible{background:rgba(255,255,255,.14)}
+.filter-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px}
+.filter-grid label{display:flex;flex-direction:column;gap:4px}
+.filter-grid input,.filter-grid select{width:100%;box-sizing:border-box;padding:9px;border:1px solid #c7d4ca;border-radius:6px}
+.filter-actions{display:flex;align-items:end;gap:12px;flex-wrap:wrap}
+.pager{display:flex;align-items:center;gap:12px;justify-content:flex-end;margin-top:12px}
+.pager a{padding:7px 12px;border:1px solid #cbd8cf;border-radius:6px;text-decoration:none}
+@media(max-width:800px){.top{padding:0 10px}.top-head{min-height:48px}.top .nav-row{gap:0 6px;padding:4px 0}.top .nav-row a{font-size:.78rem;padding:7px 5px}}
+@media(max-width:480px){.top-head{flex-wrap:wrap}.top .brand{font-size:1.1rem}.top .nav-row a{white-space:normal}.filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* V1.9.9: Eski style.css üst menü yüksekliğini ve .nav görünürlüğünü bastır. */
+html body header.oz-menu-header{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;position:relative!important;padding:0 18px 6px!important;box-sizing:border-box!important}
+html body header.oz-menu-header .top-head{height:auto!important;min-height:54px!important;flex:none!important;width:100%!important}
+html body header.oz-menu-header nav.oz-menu-links{display:flex!important;visibility:visible!important;opacity:1!important;position:static!important;transform:none!important;float:none!important;width:100%!important;height:auto!important;max-height:none!important;overflow:visible!important;flex-direction:column!important;align-items:stretch!important;gap:0!important;margin:0!important;padding:0!important;background:transparent!important}
+html body header.oz-menu-header .oz-menu-line{display:flex!important;visibility:visible!important;opacity:1!important;position:static!important;flex-direction:row!important;flex-wrap:wrap!important;align-items:center!important;width:100%!important;height:auto!important;min-height:38px!important;max-height:none!important;overflow:visible!important;gap:2px 12px!important;padding:2px 0!important;box-sizing:border-box!important}
+html body header.oz-menu-header .oz-menu-line.secondary{border-top:1px solid rgba(255,255,255,.24)!important}
+html body header.oz-menu-header .oz-menu-line a{display:inline-block!important;visibility:visible!important;opacity:1!important;position:static!important;width:auto!important;max-width:none!important;height:auto!important;color:#fff!important;background:transparent!important;font-size:14px!important;line-height:1.3!important;text-decoration:none!important;padding:8px 6px!important;white-space:normal!important}
+html body header.oz-menu-header .oz-menu-line a:hover{background:rgba(255,255,255,.15)!important;border-radius:5px!important}
+@media(max-width:650px){html body header.oz-menu-header{padding:0 10px 6px!important}html body header.oz-menu-header .oz-menu-line{gap:0 5px!important}html body header.oz-menu-header .oz-menu-line a{font-size:12px!important;padding:7px 4px!important}}
+
+/* V1.9.30: narrow screens - touch friendly navigation and horizontal table scroll. */
+.backup-actions{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}
+.backup-actions form{margin:0}.backup-actions button{min-height:44px}
+.table-scroll{overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch}
+@media(max-width:650px){
+ html body header.oz-menu-header .oz-menu-line{flex-wrap:nowrap!important;overflow-x:auto!important;scrollbar-width:thin;min-height:46px!important}
+ html body header.oz-menu-header .oz-menu-line a{white-space:nowrap!important;font-size:13px!important;padding:12px 9px!important;min-height:44px;box-sizing:border-box}
+ input,select,button{max-width:100%;font-size:16px}
+ .backup-actions{flex-direction:column}.backup-actions button{width:100%}
+ .wrap{max-width:100%;box-sizing:border-box;overflow-wrap:anywhere}
+ table{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+}
+
+/* V1.9.31: mobilde sade gezinme; masaustu menu degismez. */
+.oz-mobile-toggle,.oz-mobile-shortcuts{display:none}
+@media(max-width:700px){
+ html body header.oz-menu-header{padding:0 12px 8px!important}
+ html body header.oz-menu-header .top-head{display:flex;align-items:center;gap:8px;min-height:58px!important}
+ .oz-mobile-toggle{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;border:1px solid rgba(255,255,255,.4);border-radius:9px;background:transparent;color:white;font-size:23px;cursor:pointer}
+ html body header.oz-menu-header nav.oz-menu-links{display:none!important}
+ html body header.oz-menu-header nav.oz-menu-links.oz-mobile-open{display:flex!important}
+ html body header.oz-menu-header .oz-menu-line{flex-wrap:wrap!important;overflow:visible!important;gap:3px!important;padding:5px 0!important}
+ html body header.oz-menu-header .oz-menu-line a{display:flex!important;align-items:center;white-space:normal!important;width:calc(50% - 4px)!important;min-height:48px!important;padding:10px!important;font-size:14px!important;box-sizing:border-box!important;border-radius:9px;background:rgba(255,255,255,.07)!important}
+ .oz-mobile-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0 18px}
+ .oz-mobile-shortcuts a{display:flex;align-items:center;justify-content:center;min-height:65px;padding:10px;border:1px solid #cbdcd0;border-radius:12px;background:#f3faf4;color:#173e2c;font-weight:700;text-align:center;text-decoration:none;box-sizing:border-box}
+ .wrap{padding-left:12px!important;padding-right:12px!important;min-width:0!important}
+ .wrap input,.wrap select,.wrap textarea{max-width:100%;box-sizing:border-box;font-size:16px}
+ .wrap button,.wrap input[type=submit],.wrap .btn{min-height:44px}
+ .wrap table{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+ .wrap img,.wrap canvas{max-width:100%;height:auto}
+}
+@media(max-width:380px){html body header.oz-menu-header .oz-menu-line a{width:100%!important}}
+</style></head><body>
+<header class="top oz-menu-header">
+<div class="top-head">{% if session.get('logged_in') %}<button type="button" class="oz-mobile-toggle" id="oz-menu-button" aria-label="Menüyü aç" aria-controls="oz-main-menu" aria-expanded="false">☰</button>{% endif %}<a class="brand" href="{{ url_for('dashboard') }}">🌾 Özcan Tarım</a>{% if session.get('logged_in') %}<a class="logout" href="{{ url_for('logout') }}">Çıkış</a>{% endif %}</div>
+{% if session.get('logged_in') %}<nav class="oz-menu-links" id="oz-main-menu" aria-label="Ana menü">
+<div class="oz-menu-line primary">
+<a href="{{ url_for('dashboard') }}">🏠 Ana Sayfa</a>
+<a href="{{ url_for('operations_page') }}">🚜 İşlemler ve Faaliyetler</a>
+<a href="{{ url_for('depot_page') }}">📦 Girdi Deposu</a>
+<a href="{{ url_for('product_warehouse_page') }}">🌾 Ürün Deposu</a>
+<a href="{{ url_for('parcels_page') }}">🗺️ Parseller</a>
+<a href="{{ url_for('reports_page') }}">📊 Raporlar</a>
+<a href="{{ url_for('export_page') }}">📄 Rapor Al</a>
+</div>
+<div class="oz-menu-line secondary">
+<a href="{{ url_for('rents_page') }}">🌾 İcar / Kira</a>
+<a href="{{ url_for('payments_page') }}">💳 Ödemeler</a>
+
+<a href="{{ url_for('supports_page') }}">Destekler</a>
+<a href="{{ url_for('maintenance_page') }}">Makine Bakım</a>
+<a href="{{ url_for('record_manager') }}">🛡️ Kayıt Yönetimi</a>
+<a href="{{ url_for('backup_page') }}">💾 Yedekleme</a>
+</div></nav>{% endif %}</header>
+<main class="wrap">{% if session.get('logged_in') %}<div class="oz-mobile-shortcuts" aria-label="Hızlı erişim"><a href="{{ url_for('operations_page') }}">🚜 Yeni İşlem</a><a href="{{ url_for('parcels_page') }}">🗺️ Parseller</a><a href="{{ url_for('depot_page') }}">📦 Girdi Deposu</a><a href="{{ url_for('reports_page') }}">📊 Raporlar</a></div>{% endif %}{% with messages=get_flashed_messages(with_categories=true) %}{% if messages %}<div class="messages">{% for category,message in messages %}<div class="alert {{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}{% block content %}{% endblock %}</main><footer>Özcan Tarım · V1.9.31 · Mobil arayüz · Kayıtlar bu kurulumdaki SQLite veritabanında tutulur.</footer><script>
+(function(){
+ const btn=document.getElementById('oz-menu-button');
+ const menu=document.getElementById('oz-main-menu');
+ if(!btn||!menu)return;
+ btn.addEventListener('click',function(){
+   const open=menu.classList.toggle('oz-mobile-open');
+   btn.setAttribute('aria-expanded',String(open));
+   btn.setAttribute('aria-label',open?'Menüyü kapat':'Menüyü aç');
+   btn.textContent=open?'✕':'☰';
+ });
+ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&menu.classList.contains('oz-mobile-open'))btn.click();});
+})();
+</script><div style="position:fixed;right:14px;bottom:14px;background:#176b44;padding:11px;border-radius:8px;z-index:9999"><a href="/tam-yedek" style="color:white;font-weight:bold">Tam Yedek / Aktarım</a></div></body></html>

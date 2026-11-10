@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="pagehead"><div><h1>Stok hareketleri kontrolü · V1.9.25</h1>
+<p class="muted">Alım ve kullanım hareketleri tarih sırasıyla denetlenir. Bu ekran hiçbir kaydı değiştirmez.</p></div></div>
+<section class="card"><h2>Girdi bazında stok mutabakatı</h2>
+<div class="tablewrap"><table><thead><tr><th>Girdi / çeşit</th><th>Toplam alım</th><th>Toplam kullanım</th><th>Bugünkü bakiye</th><th>İlk tarihsel açık</th><th>En yüksek tarihsel açık</th><th>Hareketleri incele</th></tr></thead><tbody>
+{% for r in summary %}<tr><td><strong>{{r.item}}</strong>{% if r.detail %} / {{r.detail}}{% endif %}</td>
+<td>{{tr_num(r.bought,2)}} {{r.unit}}</td><td>{{tr_num(r.used,2)}} {{r.unit}}</td>
+<td>{{tr_num(r.remaining,2)}} {{r.unit}}</td><td>{{r.first_shortage or 'Yok'}}</td>
+<td>{% if r.has_issue %}<strong>{{tr_num(r.maximum_shortage,2)}} {{r.unit}}</strong>{% else %}—{% endif %}</td>
+<td><a href="{{url_for('stock_movement_audit_page',item=r.item ~ '|' ~ r.detail ~ '|' ~ r.unit)}}">İncele</a></td></tr>
+{% else %}<tr><td colspan="7">Stok hareketi bulunamadı.</td></tr>{% endfor %}
+</tbody></table></div>
+<p class="muted">Bugünkü bakiye sıfır olsa bile geçmişte alıştan önce kullanım yapıldıysa tarihsel stok açığı görülebilir. Aynı günkü alımlar kullanımlardan önce değerlendirilir.</p></section>
+<section class="card"><h2>Kontrol gerektiren kullanım kayıtları ({{issues|length}})</h2>
+<div class="tablewrap"><table><thead><tr><th>Girdi</th><th>Tarih</th><th>İşlem no</th><th>Parsel</th><th>Kullanım</th><th>İşlem sonrası açık</th></tr></thead><tbody>
+{% for r in issues %}<tr><td>{{r.item}}{% if r.detail %} / {{r.detail}}{% endif %}</td><td>{{r.date}}</td><td>#{{r.id}}</td><td>{{r.parcel or '—'}}</td><td>{{tr_num(r.quantity,2)}} {{r.unit}}</td><td><strong>{{tr_num(r.shortage,2)}} {{r.unit}}</strong></td></tr>
+{% else %}<tr><td colspan="6">Tarihsel stok açığına yol açan kullanım kaydı bulunmadı.</td></tr>{% endfor %}</tbody></table></div></section>
+<section class="card"><h2>Alım ve kullanım hareketleri</h2>
+<form method="get"><label>Girdi filtresi<select name="item" onchange="this.form.submit()"><option value="">Tüm girdiler</option>
+{% for r in summary %}{% set key=r.item ~ '|' ~ r.detail ~ '|' ~ r.unit %}<option value="{{key}}" {% if selected==key %}selected{% endif %}>{{r.item}}{% if r.detail %} / {{r.detail}}{% endif %} ({{r.unit}})</option>{% endfor %}
+</select></label></form>
+<div class="tablewrap"><table><thead><tr><th>Tarih</th><th>Girdi / çeşit</th><th>Hareket</th><th>Kayıt no</th><th>Parsel</th><th>Miktar</th><th>Önceki bakiye</th><th>Sonraki bakiye</th><th>Açık</th></tr></thead><tbody>
+{% for r in movements %}<tr><td>{{r.date}}</td><td>{{r.item}}{% if r.detail %} / {{r.detail}}{% endif %}</td><td>{{r.kind}}</td><td>#{{r.id}}</td><td>{{r.parcel or '—'}}</td><td>{{tr_num(r.quantity,2)}} {{r.unit}}</td><td>{{tr_num(r.before,2)}}</td><td>{{tr_num(r.after,2)}}</td><td>{% if r.shortage>0.00001 %}<strong>{{tr_num(r.shortage,2)}} {{r.unit}}</strong>{% else %}—{% endif %}</td></tr>
+{% else %}<tr><td colspan="9">Hareket bulunamadı.</td></tr>{% endfor %}</tbody></table></div></section>
+<p class="muted">Not: Stok açığı tek başına hatalı kayıt anlamına gelmez. Alım tarihi, kullanım tarihi, ürün/çeşit ve ölçü birimini kontrol edin. Kayıtlar otomatik düzeltilmez.</p>
+<p><a href="{{url_for('early_purchase_report')}}">← Erken Alım Analizi'ne dön</a></p>
+{% endblock %}

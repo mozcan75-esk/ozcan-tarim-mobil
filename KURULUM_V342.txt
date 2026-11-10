@@ -1,0 +1,9 @@
+ÖZCAN TARIM WINDOWS/WEB V3.4.2
+1. Önce eski çalışan uygulamanızın ozcan_tarim.db dosyasını ayrı yere yedekleyin.
+2. ZIP'i yeni klasöre çıkarın. İçindeki ozcan_tarim.db paket örneğidir; kendi güncel veritabanınızla KARIŞTIRMAYIN.
+3. Güncel veritabanınızı kullanacaksanız kapalı uygulamada kendi ozcan_tarim.db dosyanızı bu klasöre KOPYALAYIN (önce her ikisini yedekleyin).
+4. Baslat_Windows.bat dosyasına çift tıklayın, web parolasını girin.
+5. http://127.0.0.1:5000 adresinden kullanın.
+6. iPhone JSON yedeğini sadece incelemek için /iphone-yedek-raporu sayfasını kullanın.
+7. Bu sürümde iPhone JSON verilerini PC SQLite içine eksiksiz içe aktarma YOKTUR. Otomatik eşitleme YOKTUR.
+8. Web sunucusu yalnızca kendi bilgisayarınızdan erişilecek şekilde başlatılır.

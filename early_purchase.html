@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="pagehead"><div><h1>Erken alım analizi · V1.9.27</h1>
+<p class="muted">Alış maliyeti ile piyasa fiyatı ayrı takip edilir. Fiyat farkı muhasebe geliri değildir.</p></div>
+<form method="get"><label>Sezon<select name="season" onchange="this.form.submit()">
+{% for s in seasons %}<option value="{{s}}" {% if s==season %}selected{% endif %}>{{s}}</option>{% endfor %}
+</select></label></form></div>
+<section class="card">
+<h2>{{season}} sezonu · gerçekleşen fiyat karşılaştırması</h2>
+<p class="muted">Yalnızca kullanım tarihinde (veya öncesinde) piyasa fiyatı bulunan işlemler dahildir. Kg ve litre miktarları birbirine eklenmez.</p>
+<div class="tablewrap"><table><thead><tr><th>Karşılaştırılan işlem</th><th>Kayıtlı alış gideri</th><th>Kullanım tarihindeki piyasa değeri</th><th>Gerçekleşen fiyat farkı</th><th>Piyasa fiyatı eksik işlem</th></tr></thead><tbody><tr>
+<td>{{early_summary.compared_count}} işlem{% for unit,qty in early_summary.compared_qty_by_unit.items() %} · {{tr_num(qty,2)}} {{unit}}{% endfor %}</td>
+<td>{{tr_num(early_summary.recorded_cost,2)}} TL</td>
+<td>{{tr_num(early_summary.market_value,2)}} TL</td>
+<td><strong>{{tr_num(early_summary.realized_difference,2)}} TL</strong></td>
+<td>{{early_summary.missing_count}} işlem</td></tr></tbody></table></div>
+<p class="muted">Artı değer fiyat avantajını, eksi değer dezavantajı gösterir. Muhasebe geliri değildir.</p>
+<h3>Depoda kalan girdiler · ayrı değerleme</h3>
+<p>Güncel piyasa fiyatı ve geçerli FIFO eşleşmesi bulunan {{early_summary.stock_valued_count}} girdi grubunun stok fiyat farkı: <strong>{{tr_num(early_summary.remaining_stock_difference,2)}} TL</strong>.</p>
+<p class="muted">Bu tutar gerçekleşmiş erken alım avantajına eklenmez. Piyasa fiyatı bulunmayan stoklar toplamın dışında kalır; karşılaştırma tarihi aşağıdaki tabloda gösterilir.</p>
+</section>
+<section class="card"><h2>Piyasa fiyatı eksik kullanımlar</h2>
+<p class="muted">Fiyatı bilinmeyen kullanımlar ayrı listelenir. Fiyat kaydı oluşturmak stok veya gideri değiştirmez. Fiyatı kullanım gününe veya öncesine kaydedin; tarihsel fiyatı bilmiyorsanız tahmini değer girmeyin.</p>
+<div class="tablewrap"><table><thead><tr><th>Girdi / çeşit</th><th>Kullanım tarihi</th><th>İşlem no.</th><th>Miktar</th><th>Kayıtlı maliyet</th><th>İşlem</th></tr></thead><tbody>
+{% for d in missing_quotes %}<tr><td>{{d.item}}{% if d.detail %} / {{d.detail}}{% endif %}</td><td>{{d.op_date}}</td><td>#{{d.op_id}}</td><td>{{tr_num(d.quantity,2)}} {{d.unit}}</td><td>{% if d.recorded_cost is not none %}{{tr_num(d.recorded_cost,2)}} TL{% else %}—{% endif %}</td>
+<td><a href="{{url_for('market_quotes_page',item=d.item,detail=d.detail,unit=d.unit,price_date=d.op_date)}}">Bu tarih için fiyat gir →</a></td></tr>
+{% else %}<tr><td colspan="6">Seçili sezonda piyasa fiyatı eksik kullanım yok.</td></tr>{% endfor %}
+</tbody></table></div></section>
+<section class="card">
+<div class="sectionhead"><div><h2>Alış maliyeti ve piyasa karşılaştırması</h2>
+<p class="muted">Kullanım seçili sezona, kalan stok tüm sezonlara aittir. Piyasa fiyatı yoksa alış maliyeti yine gösterilir.</p></div>
+<a class="button secondary" href="{{url_for('market_quotes_page')}}">Piyasa fiyatı gir</a></div>
+<p><a href="{{url_for('stock_movement_audit_page')}}">Stok hareketleri kontrolü: tarihsel açıkları ve işlem kayıtlarını incele →</a></p>
+<div class="tablewrap"><table>
+<thead><tr>
+<th>Girdi / çeşit</th><th>Alış maliyeti bilinen kullanım</th><th>Alış maliyeti eksik</th>
+<th>Piyasa fiyatı bilinen kullanım</th><th>Piyasa fiyatı eksik</th>
+<th>Karşılaştırılabilen kullanım</th><th>Bu kullanımın kayıtlı maliyeti</th>
+<th>Bu kullanımın piyasa değeri</th><th>Fiyat farkı</th>
+<th>Depoda kalan (tüm sezonlar)</th><th>Kalan stok kayıtlı maliyeti</th><th>Kalan stok fiyat farkı</th>
+</tr></thead><tbody>
+{% for r in early_rows %}
+<tr><td><strong>{{r.item}}</strong>{% if r.detail %}<small> / {{r.detail}}</small>{% endif %}</td>
+<td>{{tr_num(r.cost_known,2)}} {{r.unit}}</td>
+<td>{{tr_num(r.cost_missing,2)}} {{r.unit}}</td>
+<td>{{tr_num(r.quote_known,2)}} {{r.unit}}</td>
+<td>{{tr_num(r.quote_missing,2)}} {{r.unit}}</td>
+<td>{{tr_num(r.compared,2)}} {{r.unit}}</td>
+<td>{{tr_num(r.used_cost,2)}} TL</td>
+<td>{{tr_num(r.used_market,2)}} TL</td>
+<td>{% if r.compared %}{{tr_num(r.used_gain,2)}} TL{% else %}—{% endif %}</td>
+<td>{{tr_num(r.remaining,2)}} {{r.unit}}</td>
+<td>{% if r.fifo_missing %}Stok geçmişi uyuşmuyor{% else %}{{tr_num(r.stock_cost,2)}} TL{% endif %}</td>
+<td>{% if r.stock_gain is not none %}{{tr_num(r.stock_gain,2)}} TL <small>({{r.latest_date}})</small>{% else %}Piyasa fiyatı veya stok eşleşmesi eksik{% endif %}</td></tr>
+{% else %}<tr><td colspan="12">Depo alım kaydı bulunamadı.</td></tr>{% endfor %}
+</tbody></table></div>
+<p class="muted"><strong>Hesap yöntemi:</strong> Kullanımın alış maliyeti kayıtlı gider tutarından alınır; piyasa fiyatı kullanım tarihinde veya öncesinde kaydedilmiş son fiyatla karşılaştırılır. Sonradan girilen piyasa fiyatı geçmiş işlemlere geriye dönük uygulanmaz. Kalan stok maliyeti, alım ve tüketim tarihleri esas alınarak FIFO yöntemiyle hesaplanır. Piyasa fiyatı farkları gelir veya gider kayıtlarına eklenmez. Stok geçmişinde tarih uyumsuzluğu varsa stok değerlemesi yapılmaz.</p>
+</section><section class="card">
+<h2>İşlem bazında erken alım ayrıntıları</h2>
+<p class="muted">Alış partileri FIFO sırasıyla listelenir. Bir işlem birden fazla partiden karşılanmış olabilir. Alış maliyeti ile piyasa fiyatı ayrı kaynaktan okunur.</p>
+<div class="tablewrap"><table><thead><tr>
+<th>Girdi / çeşit</th><th>Kullanım tarihi</th><th>İşlem no.</th><th>Kullanım miktarı</th>
+<th>FIFO alış tarihi / miktarı / birim fiyatı</th><th>FIFO alış maliyeti</th><th>Kayıtlı gider</th>
+<th>Piyasa fiyatı tarihi</th><th>Piyasa birim fiyatı</th><th>Piyasa değeri</th><th>Fiyat farkı</th><th>Durum</th>
+</tr></thead><tbody>
+{% for d in early_details %}
+<tr><td><strong>{{d.item}}</strong>{% if d.detail %} / {{d.detail}}{% endif %}</td>
+<td>{{d.op_date}}</td><td>#{{d.op_id}}</td><td>{{tr_num(d.quantity,2)}} {{d.unit}}</td>
+<td>{% for lot in d.allocations %}{{lot.date}} · {{tr_num(lot.quantity,2)}} {{d.unit}} × {{tr_num(lot.unit_price,2)}} TL{% if not loop.last %}<br>{% endif %}{% else %}—{% endfor %}</td>
+<td>{% if d.fifo_cost is not none %}{{tr_num(d.fifo_cost,2)}} TL{% else %}Eşleşme eksik{% endif %}</td>
+<td>{% if d.recorded_cost is not none %}{{tr_num(d.recorded_cost,2)}} TL{% else %}—{% endif %}</td>
+<td>{{d.quote_date or '—'}}</td>
+<td>{% if d.quote_price is not none %}{{tr_num(d.quote_price,2)}} TL/{{d.unit}}{% else %}—{% endif %}</td>
+<td>{% if d.market_value is not none %}{{tr_num(d.market_value,2)}} TL{% else %}—{% endif %}</td>
+<td>{% if d.difference is not none %}{{tr_num(d.difference,2)}} TL{% else %}Hesaplanamadı{% endif %}</td>
+<td>{% if d.missing_fifo > 0.00001 %}Alış partisi eksik: {{tr_num(d.missing_fifo,2)}} {{d.unit}}{% elif d.quote_date is none %}Piyasa fiyatı eksik{% else %}Karşılaştırıldı{% endif %}</td></tr>
+{% else %}<tr><td colspan="12">Seçili sezonda girdi tüketim kaydı bulunamadı.</td></tr>{% endfor %}
+</tbody></table></div>
+<p class="muted">Fiyat farkı, kaydedilmiş gider tutarı ile kullanım tarihindeki (veya daha önceki son) piyasa fiyatının karşılaştırılmasıdır. FIFO alış maliyeti ayrıca denetim amaçlı gösterilir. Eksik alış partileri geçmiş kayıtları değiştirmeden işaretlenir.</p>
+</section>
+<p><a href="{{url_for('reports_page',season=season)}}">← Raporlara dön</a></p>
+{% endblock %}

@@ -1,0 +1,2 @@
+Özcan Tarım iPhone Mobil V3.5.6
+Bu paket TAM mobil klasördür. Mevcut klasörünüzü yedekleyin, sonra dosyaları güncelleyin. iPhone ana ekranda eski sürüm kalırsa uygulamayı tamamen kapatıp yeniden açın. JSON yedeği alın. Veritabanını/IndexedDB kayıtlarını silmeyin. Web ile otomatik senkronizasyon yoktur.

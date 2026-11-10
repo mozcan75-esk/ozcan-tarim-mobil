@@ -1,0 +1,156 @@
+{% extends 'base.html' %}{% block content %}<div class="pagehead"><div><p class="eyebrow">GÜNLÜK KAYIT</p><h1>Tarla işlemleri</h1><p class="muted">Zorunlu alanlar kontrol edilir. Hasat ürün stoğunu artırır; satış stoktan düşer.</p></div></div>
+<section class="card" id="faaliyet"><h2>Tek Tarla İşlemi Formu</h2><p>Balya ve nakliye işlemleri de aşağıdaki işlem türü listesinden seçilir. <a href="{{url_for('payments_page')}}">Borçlar ve ödemeler</a></p>
+<p class="muted"><a href="{{url_for('product_warehouse_page')}}">Ürün satışı için Ürün Deposu'na git →</a> İşlem seçin; yalnızca o işe ait alanlar görünür. Hasatta ürün depoya girer, motorin düşer, biçerdöver hizmeti gider yazılır.</p>
+<form method="post" id="smart-field-form" action="{{url_for('save_field_activity')}}" class="formgrid">
+<input type="hidden" name="csrf_token" value="{{csrf}}">
+<label>Üretim sezonu *<select name="season" id="smart-season">{% for s in seasons %}<option value="{{s}}">{{s}}</option>{% endfor %}</select></label>
+<label>Tarih *<input type="date" name="op_date" value="{{today}}" required></label>
+<label>Parsel *<select name="parcel_code" id="smart-parcel" required><option value="">Parsel seçin</option>{% for p in parcels %}<option value="{{p.code}}">{{p.code}} – {{p.name}}</option>{% endfor %}</select></label>
+<label>Tarla işi *<select name="activity_type" id="smart-type"><option>Ekim</option><option>Kazayağı Sürme</option><option>Tırmık Sürme</option><option>Pulluk Sürme</option><option>Hasat</option><option>Balya</option><option>Nakliye</option></select></label>
+<label>İşlenen alan (da) *<input name="application_area" id="smart-area" type="number" min="0.001" step="any" required></label>
+<div class="wide" id="smart-seed"><label>Tohum (depo çeşidi) *<select id="seed-id" name="depot_item_id[]"><option value="">Tohum seçin</option>{% for p in depot_choices %}{% if p.item in ['Arpa','Buğday'] %}<option value="{{p.id}}">{{p.item}}{% if p.item_detail %} / {{p.item_detail}}{% endif %}</option>{% endif %}{% endfor %}</select></label>
+<label>Tohum kg/da *<input id="seed-rate" name="rate_per_decare[]" type="number" step="any" min="0.001" value="27"></label></div>
+<div class="wide" id="smart-fertilizer"><label>Gübre (isteğe bağlı)<select id="fert-id" name="depot_item_id[]"><option value="">Gübre kullanılmadı</option>{% for p in depot_choices %}{% if p.item=='Gübre' %}<option value="{{p.id}}">{{p.item}}{% if p.item_detail %} / {{p.item_detail}}{% endif %}</option>{% endif %}{% endfor %}</select></label>
+<label>Gübre kg/da<input id="fert-rate" name="rate_per_decare[]" type="number" step="any" min="0" value="17"></label></div>
+<div class="wide" id="smart-diesel"><label>Motorin (depo çeşidi)<select id="diesel-id" name="depot_item_id[]"><option value="">Motorin seçin</option>{% for p in depot_choices %}{% if p.item=='Motorin' %}<option value="{{p.id}}">{{p.item}}{% if p.item_detail %} / {{p.item_detail}}{% endif %}</option>{% endif %}{% endfor %}</select></label>
+<label>Motorin L/da<input id="diesel-rate" name="rate_per_decare[]" type="number" step="any" min="0" value="0.6"></label></div>
+<div class="wide" id="smart-harvest" style="display:none">
+<label>Hasat edilen ürün<select name="crop" id="harvest-crop" disabled><option>Buğday</option><option>Arpa</option></select></label>
+<label>Hasat miktarı (kg)<input name="harvest_kg" id="harvest-kg" type="number" step="any" min="0.001" disabled></label>
+<label>Traktör motorini (L/da)<input name="diesel_rate" id="harvest-diesel" type="number" step="any" min="0" value="0.6" disabled></label>
+<label>Biçerdöver ücreti (TL/da)<input name="service_rate" id="harvest-fee" type="number" step="any" min="0" value="0" disabled></label>
+<label>Biçerdöverci / firma<input name="provider" id="harvest-provider" placeholder="İsteğe bağlı" disabled></label>
+
+
+<p class="hint">Hizmet bedeli gider olarak bir kez kaydedilir. Ödenmeyen tutar Hizmetler / Ödemeler sayfasında borç olarak izlenir.</p>
+</div>
+<label class="wide">Açıklama<input name="note" placeholder="İsteğe bağlı"></label>
+<div class="wide" id="field-preview" role="status"></div>
+<div class="formactions"><button type="submit">Tarla işlemini kaydet</button></div>
+</form>
+<form method="post" action="{{url_for('field_services_page')}}" id="smart-service-form" class="formgrid" style="display:none">
+<input type="hidden" name="csrf_token" value="{{csrf}}"><input type="hidden" name="action" value="service">
+<input type="hidden" name="season" id="service-season"><input type="hidden" name="parcel_code" id="service-parcel"><input type="hidden" name="service_type" id="service-type"><input type="hidden" name="area_da" id="service-area"><input type="hidden" name="service_date" id="service-date">
+<p class="wide muted">Parsel, sezon, tarih ve işlenen alanı üstteki işlem formundan seçin. Hizmet bedeli gider ve borç oluşturur; ödemeler ayrı Ödemeler bölümünden yapılır.</p>
+<label>Hizmeti veren kişi / firma<input name="provider" placeholder="İsteğe bağlı"></label>
+<div class="wide" id="bale-extra" style="display:none">
+<label>Balya türü<select name="bale_crop" id="bale-crop"><option>Arpa Samanı</option><option>Buğday Samanı</option></select></label>
+<label>Üretilen balya adedi<input name="bale_count" id="bale-count" type="number" min="1" step="1" value="1"></label>
+<label>Ortalama ağırlık (kg/adet)<input name="bale_weight" id="bale-weight" type="number" min="1" step="any" value="250"></label></div>
+<label id="service-rate-label">Ücret (TL/da)<input name="rate_da" id="service-rate" type="number" step="0.01" min="0" required disabled></label>
+<label class="wide">Açıklama<input name="note" placeholder="İsteğe bağlı" disabled></label>
+<div class="wide" id="service-preview" role="status"></div>
+<div class="formactions"><button type="submit" disabled id="service-submit">Balya / nakliye işlemini kaydet</button></div>
+</form></section>
+<section class="card" id="faaliyet-listesi"><div class="sectionhead"><h2>Kayıtlı Tarla Faaliyetleri ({{activities|length}})</h2><span class="muted">2026/2027 · Her faaliyet tek satır</span></div>
+<div class="tablewrap"><table><thead><tr><th>Tarih</th><th>Parsel</th><th>İşlem</th><th>Alan</th><th>Malzeme / kayıt</th><th>Gider</th><th>İncele</th></tr></thead><tbody>
+{% for a in activities %}<tr><td>{{a.activity_date}}</td><td>{{a.parcel_code}}</td><td>{{a.activity_type}}</td><td>{{tr_num(a.area_da,3)}} da</td><td>{{a.line_count}}</td><td>{{tr_num(a.total_cost,2)}} TL</td><td><a href="{{url_for('field_activity_detail',activity_id=a.id)}}">Aç / düzenle</a></td></tr>
+{% else %}<tr><td colspan="7">Henüz tarla faaliyeti bulunmuyor.</td></tr>{% endfor %}
+</tbody></table></div></section>
+<script>
+(function(){
+const f=document.getElementById('smart-field-form'),type=document.getElementById('smart-type'),season=document.getElementById('smart-season'),parcel=document.getElementById('smart-parcel'),area=document.getElementById('smart-area');
+const worked={{worked_areas|tojson}}, balances={{depot_balances|tojson}};
+const seed=document.getElementById('seed-id'),fert=document.getElementById('fert-id'),diesel=document.getElementById('diesel-id');
+const sr=document.getElementById('seed-rate'),fr=document.getElementById('fert-rate'),dr=document.getElementById('diesel-rate');
+const harvest=document.getElementById('smart-harvest'),seedbox=document.getElementById('smart-seed'),fertbox=document.getElementById('smart-fertilizer'),dieselbox=document.getElementById('smart-diesel');
+function chooseFirst(el){if(el.options.length>1&&!el.value)el.selectedIndex=1;}
+function sync(){
+ const kind=type.value, isService=kind==='Balya'||kind==='Nakliye', isHarvest=kind==='Hasat', isEkim=kind==='Ekim';
+ document.getElementById('smart-service-form').style.display=isService?'':'none';
+ f.querySelector('.formactions').style.display=isService?'none':'';
+ for(const e of document.querySelectorAll('#smart-service-form input:not([type=hidden]),#smart-service-form button'))e.disabled=!isService;
+ f.action=isHarvest?{{url_for('save_field_harvest')|tojson}}:{{url_for('save_field_activity')|tojson}};
+ harvest.style.display=isHarvest?'':'none';seedbox.style.display=isEkim?'':'none';fertbox.style.display=isEkim?'':'none';dieselbox.style.display=isHarvest?'none':'';
+ for(const e of harvest.querySelectorAll('input,select'))e.disabled=!isHarvest;
+ seed.disabled=!isEkim;sr.disabled=!isEkim;
+ fert.disabled=!isEkim;fr.disabled=!isEkim||!fert.value;
+ diesel.disabled=isHarvest;dr.disabled=isHarvest;
+ if(!isHarvest){chooseFirst(diesel);if(isEkim){chooseFirst(seed);if(seed.selectedOptions[0]?.textContent.includes('Buğday'))sr.value='25';}}
+ if(kind==='Pulluk Sürme')dr.value='2';else if(kind==='Kazayağı Sürme'||kind==='Tırmık Sürme')dr.value='0.7';else if(kind==='Ekim')dr.value='0.6';
+ if(!isEkim)fert.disabled=true;
+ refresh();
+}
+function refresh(){
+ const a=Number(area.value||0),kind=type.value,fmt=n=>n.toLocaleString('tr-TR',{maximumFractionDigits:3});
+ const info=kind==='Hasat'?'Ürün depoya: '+fmt(Number(document.getElementById('harvest-kg').value||0))+' kg · Motorin: '+fmt(a*Number(document.getElementById('harvest-diesel').value||0))+' L · Biçerdöver gideri: '+fmt(a*Number(document.getElementById('harvest-fee').value||0))+' TL':
+ 'Toplam tüketim: '+(kind==='Ekim'?'Tohum '+fmt(a*Number(sr.value||0))+' kg · Gübre '+fmt(fert.value?a*Number(fr.value||0):0)+' kg · ':'')+'Motorin '+fmt(a*Number(dr.value||0))+' L';
+ document.getElementById('field-preview').textContent=info;
+}
+function updateArea(){area.value=(worked[season.value]||{})[parcel.value]||'';refresh();}
+type.addEventListener('change',sync);parcel.addEventListener('change',updateArea);season.addEventListener('change',updateArea);
+seed.addEventListener('change',()=>{sr.value=seed.selectedOptions[0]?.textContent.includes('Buğday')?'25':'27';refresh()});
+fert.addEventListener('change',()=>{fert.disabled=false;fr.disabled=!fert.value;refresh()});
+for(const e of [area,sr,fr,dr,document.getElementById('harvest-kg'),document.getElementById('harvest-diesel'),document.getElementById('harvest-fee')])e.addEventListener('input',refresh);
+f.addEventListener('submit',()=>{if(type.value==='Ekim'){fert.disabled=!fert.value;fr.disabled=!fert.value;}});
+const serviceForm=document.getElementById('smart-service-form');
+function syncService(){
+ document.getElementById('service-season').value=season.value;
+ document.getElementById('service-parcel').value=parcel.value;
+ document.getElementById('service-type').value=type.value;
+ document.getElementById('bale-extra').style.display=type.value==='Balya'?'':'none';
+ document.getElementById('service-rate-label').firstChild.textContent=type.value==='Balya'?'Ücret (TL/balya)':'Ücret (TL/da)';
+ serviceForm.action=type.value==='Balya'?{{url_for('save_bale_activity')|tojson}}:{{url_for('field_services_page')|tojson}};
+ document.getElementById('service-area').value=area.value;
+ document.getElementById('service-date').value=f.querySelector('[name=op_date]').value;
+ const total=(type.value==='Balya'?Number(document.getElementById('bale-count').value)||0:Number(area.value)||0)*(Number(document.getElementById('service-rate').value)||0);
+ document.getElementById('service-preview').textContent='Toplam hizmet gideri ve borç: '+total.toLocaleString('tr-TR',{style:'currency',currency:'TRY'});
+}
+for(const e of [type,season,parcel,area,f.querySelector('[name=op_date]'),document.getElementById('service-rate')])e.addEventListener('change',syncService);
+for(const e of [area,document.getElementById('service-rate'),document.getElementById('bale-count'),document.getElementById('bale-weight')])e.addEventListener('input',syncService);
+serviceForm.addEventListener('submit',function(e){syncService();if(!parcel.value||!(Number(area.value)>0)){e.preventDefault();alert('Parsel ve işlenen alan seçin.');}});
+sync();syncService();
+})();
+</script>
+<section class="card"><h2>İcar ve diğer kayıtlar</h2><p><a href="{{url_for('sync_item_names')}}">Eski ürün ve çeşit kayıtlarını eşitle (önizleme)</a></p><form method="post" class="formgrid" id="opform"><label>Üretim sezonu *<select name="season" required>{% for s in seasons %}<option>{{s}}</option>{% endfor %}</select></label><label>Tarih *<input type="date" name="op_date" value="{{today}}" required></label><label>Parsel<select name="parcel_code"><option value="">Parsel seçin (gerekli türe göre)</option>{% for p in parcels %}<option value="{{p.code}}" data-area="{{p.area_m2 / 1000}}">{{p.code}} - {{p.name}}</option>{% endfor %}</select></label><label>İşlem türü *<select name="op_type" id="optype" required>{% for t in op_types %}{% if t not in ['Ekim','Gübreleme','İlaçlama','Yakıt','Hasat','Satış'] %}<option>{{t}}</option>{% endif %}{% endfor %}</select></label><label class="stock-dose">Yapılan tarla işi (motorin için)<select name="field_work"><option value="">Seçin</option><option>Pulluk</option><option>Kazayağı</option><option>Tırmık</option><option>Ekim</option><option>Goble</option><option>İlaçlama</option><option>Diğer</option></select></label><label class="depot-choice">Depodan ürün / çeşit seçin *<select name="depot_item_id" id="depot_item_id"><option value="">Depodaki malzemeyi seçin</option>{% for p in depot_choices %}<option value="{{p.id}}">{{p.item}}{% if p.item_detail %} / {{p.item_detail}}{% endif %} — {{p.unit}}</option>{% endfor %}</select></label><label class="manual-item">Ürün / malzeme *<input name="item" placeholder="Örn. Pulluk, Buğday (hasat), Nakliye"></label><label class="manual-item">Çeşit / ayrıntı<input name="item_detail" placeholder="İsteğe bağlı"></label><label class="stock-dose">Dönüm başına miktar *<input type="number" name="rate_per_decare" id="rate_per_decare" min="0.001" step="any" placeholder="Örn. 26"></label><label class="stock-dose">Uygulama alanı (da) *<input type="number" name="application_area" id="application_area" min="0.001" step="any" placeholder="Parsel alanı"></label><label class="total-quantity">Toplam miktar *<input type="number" name="quantity" id="opquantity" min="0.001" step="0.001" required></label><label>Birim *<select name="unit" id="unit" required>{% for u in units %}<option>{{u}}</option>{% endfor %}</select></label><label class="price-field">Birim fiyat (TL)<input type="number" name="unit_price" min="0" step="0.01" value="0"></label><label class="direction-field">Gelir / gider *<select name="direction" id="direction" required><option>Gider</option><option>Gelir</option><option>Nötr</option></select></label><label class="category-field">Gider kategorisi<select name="category"><option value="">Seçin</option>{% for c in categories %}<option>{{c}}</option>{% endfor %}</select></label><label class="wide">Açıklama<input name="note" placeholder="İsteğe bağlı açıklama"></label><div class="wide" id="smart-summary" role="status" aria-live="polite" style="padding:12px;border:1px solid #d6dfda;border-radius:8px;line-height:1.8">İşlem türünü ve parseli seçerek başlayın.</div><div class="formactions"><button type="submit">İşlemi kaydet</button></div></form><p class="hint">Depoda kayıtlı bir malzeme tüketilirse maliyet, alım kayıtlarından hesaplanan ağırlıklı ortalama fiyata göre alınır. Yeterli stok yoksa kayıt engellenir.</p></section><section class="card"><div class="sectionhead"><h2>İşlem kayıtları</h2><span class="muted">{{ total }} kayıt bulundu · <a href="{{ url_for('record_manager',tur='islem') }}">İptal / Geri Al</a></span></div>
+<form method="get" class="filter-grid" aria-label="İşlem arama ve filtreleme">
+<label>Arama<input name="q" value="{{ filters.q }}" placeholder="Mazot, pulluk, açıklama..."></label>
+<label>Sezon<select name="season_filter"><option value="">Tüm sezonlar</option>{% for s in seasons %}<option value="{{s}}" {% if filters.season_filter==s %}selected{% endif %}>{{s}}</option>{% endfor %}</select></label>
+<label>Parsel<select name="parcel_filter"><option value="">Tüm parseller</option>{% for p in parcels %}<option value="{{p.code}}" {% if filters.parcel_filter==p.code %}selected{% endif %}>{{p.code}} - {{p.name}}</option>{% endfor %}</select></label>
+<label>İşlem türü<select name="type_filter"><option value="">Tüm işlemler</option>{% for t in op_types %}<option value="{{t}}" {% if filters.type_filter==t %}selected{% endif %}>{{t}}</option>{% endfor %}</select></label>
+<label>Başlangıç tarihi<input type="date" name="date_from" value="{{filters.date_from}}"></label>
+<label>Bitiş tarihi<input type="date" name="date_to" value="{{filters.date_to}}"></label>
+<div class="filter-actions"><button type="submit">Ara / Süz</button><a href="{{url_for('operations_page')}}">Temizle</a></div>
+</form><div class="tablewrap"><table><thead><tr><th>Tarih</th><th>Sezon</th><th>Parsel</th><th>İşlem</th><th>Ürün / malzeme</th><th>Çeşit / ayrıntı</th><th>Miktar</th><th>Tutar</th><th>Tür</th></tr></thead><tbody>{% for o in operations %}<tr><td>{{o.op_date}}</td><td>{{o.season}}</td><td>{{o.parcel_code or '—'}}{% if o.parcel_name %}<small class="sub">{{o.parcel_name}}</small>{% endif %}</td><td>{{o.op_type}}</td><td>{{o.item}}</td><td>{{o.item_detail or "—"}}</td><td>{{tr_num(o.quantity, 3)}} {{o.unit}}</td><td>{{'{:,.2f}'.format(o.amount).replace(',', 'X').replace('.', ',').replace('X','.')}} TL</td><td>{{o.direction}}</td><td><a href="{{ url_for('edit_operation',record_id=o.id) }}">Düzenle</a></td></tr>{% else %}<tr><td colspan="8" class="empty">Bu filtrelere uygun işlem bulunamadı.</td></tr>{% endfor %}</tbody></table></div>
+<div class="pager">{% if page>1 %}<a href="{{url_for('operations_page',page=page-1,**filters)}}">← Önceki</a>{% endif %}<span>Sayfa {{page}} / {{pages}}</span>{% if page<pages %}<a href="{{url_for('operations_page',page=page+1,**filters)}}">Sonraki →</a>{% endif %}</div></section><script>
+const t=document.getElementById('optype'),d=document.getElementById('direction'),u=document.getElementById('unit');
+const stockTypes=['Ekim','Gübreleme','İlaçlama','Yakıt'];
+const balances={{depot_balances|tojson}};
+const workedAreas={{worked_areas|tojson}};
+const workField=document.querySelector('[name=field_work]').closest('label');
+const seasonSelect=document.querySelector('#opform [name=season]');
+const balanceById=Object.fromEntries(balances.map(x=>[String(x.id),x]));
+const parcel=document.querySelector('[name=parcel_code]'),pick=document.getElementById('depot_item_id'),qty=document.getElementById('opquantity');
+const summary=document.getElementById('smart-summary');
+const rate=document.getElementById('rate_per_decare'),applied=document.getElementById('application_area');
+let lastParcel='';
+function showClass(name,visible){document.querySelectorAll('.'+name).forEach(el=>el.style.display=visible?'':'none')}
+function sync(){if(t.value==='Yakıt'){u.value='L';d.value='Gider'}else if(t.value==='Hasat'){d.value='Nötr';u.value='kg'}else if(t.value==='Satış'){d.value='Gelir';u.value='kg'}else if(t.value==='İcar/Kiralama'){d.value='Gider'}}
+function refresh(){
+ const stock=stockTypes.includes(t.value),harvest=t.value==='Hasat',sale=t.value==='Satış';
+ showClass('depot-choice',stock);showClass('manual-item',!stock);
+ showClass('stock-dose',stock);workField.style.display=t.value==='Yakıt'?'':'none';showClass('total-quantity',!stock);
+ qty.disabled=stock;qty.required=!stock;rate.disabled=!stock;applied.disabled=!stock;rate.required=stock;applied.required=stock;
+ document.querySelectorAll('.manual-item input').forEach(e=>e.disabled=stock);
+ pick.disabled=!stock;pick.required=stock;
+ document.querySelector('[name=unit]').disabled=stock;
+ document.querySelector('[name=category]').disabled=stock;
+ showClass('price-field',!stock&&!harvest);showClass('direction-field',!stock&&!harvest&&!sale);showClass('category-field',!stock);
+ parcel.required=stock||harvest||sale;
+ if(stock){d.value='Gider';const b=balanceById[pick.value];if(b)u.value=b.unit}
+ if(harvest)d.value='Nötr';if(sale)d.value='Gelir';
+ const area=Number((workedAreas[seasonSelect.value]||{})[parcel.value]||parcel.selectedOptions[0]?.dataset.area||0);
+ if(parcel.value+'|'+seasonSelect.value!==lastParcel){applied.value=area>0?String(area):'';lastParcel=parcel.value+'|'+seasonSelect.value}
+ const amount=stock ? Math.round(Number(rate.value||0)*Number(applied.value||0)*1000)/1000 : Number(qty.value||0);
+ let lines=[];
+ if(area>0)lines.push('Sezonluk işlenen alan: '+area.toLocaleString('tr-TR',{maximumFractionDigits:3})+' dönüm');
+ if(stock){if(t.value==='Ekim'&&pick.selectedOptions[0]?.textContent?.trim().startsWith('Gübre'))lines.push('Gübre seçildi: kayıt Gübreleme türüyle saklanacak. Tohumu ayrıca Ekim olarak girin.');lines.push('Uygulama alanı: '+Number(applied.value||0).toLocaleString('tr-TR')+' da · Dönüm başına: '+Number(rate.value||0).toLocaleString('tr-TR')+' · Toplam tüketim: '+amount.toLocaleString('tr-TR',{maximumFractionDigits:3}));const b=balanceById[pick.value];if(b){lines.push('Depoda kalan: '+b.remaining.toLocaleString('tr-TR',{maximumFractionDigits:3})+' '+b.unit);if(amount>0){lines.push('İşlem sonrası tahmini stok: '+(b.remaining-amount).toLocaleString('tr-TR',{maximumFractionDigits:3})+' '+b.unit);if(amount>b.remaining+0.000001)lines.push('⚠ Stok yetersiz; kayıt sunucuda engellenecek.')}}else lines.push('Depodan malzeme seçin.');if(area>0&&amount>0)lines.push('Dönüm başına kullanım: '+(amount/area).toLocaleString('tr-TR',{maximumFractionDigits:3})+' '+(b?.unit||u.value)+'/da')}
+ if(harvest&&area>0&&amount>0)lines.push('Hasat verimi: '+(amount/area).toLocaleString('tr-TR',{maximumFractionDigits:2})+' kg/da');
+ if(sale)lines.push('Satış fiyatı ve miktarı girin; ürün stok kontrolü kayıt sırasında yapılır.');
+ if(!lines.length)lines.push('İşlem türünü, parseli ve miktarı seçin.');
+ summary.textContent=lines.join(' · ');
+}
+t.addEventListener('change',()=>{sync();refresh()});
+[pick,parcel,seasonSelect,qty,rate,applied].forEach(e=>e.addEventListener('change',refresh));[qty,rate,applied].forEach(e=>e.addEventListener('input',refresh));
+sync();refresh();
+</script>{% endblock %}

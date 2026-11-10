@@ -1,0 +1,11 @@
+{% extends 'base.html' %}{% block content %}
+<section class="card"><h1>Ürün ve çeşit kayıtlarını eşitle</h1>
+<p>Bu işlem hem Girdi Deposu hem İşlemler kayıtlarını birlikte dönüştürür. Mevcut çeşit bilgisi korunur. Fiyat, miktar, tarih ve tutar değişmez.</p>
+<p><b>Önemli:</b> Farklı gübre ve tohum çeşitleri şu an stok/FIFO hesabında ayrı izlenmez. Bu nedenle eşitleme sonrasında çeşit bazında gerçek maliyet raporu henüz hazır değildir. İşlemden önce veritabanı yedeği alın.</p>
+{% if changes %}
+<div class="tablewrap"><table><thead><tr><th>Kaynak</th><th>Kayıt</th><th>Eski ürün</th><th>Eski ayrıntı</th><th>Yeni ürün</th><th>Yeni ayrıntı</th></tr></thead><tbody>
+{% for c in changes %}<tr><td>{{'İşlemler' if c[0]=='operations' else 'Girdi Deposu'}}</td><td>{{c[1]}}</td><td>{{c[2]}}</td><td>{{c[3] or '—'}}</td><td><b>{{c[4]}}</b></td><td>{{c[5] or '—'}}</td></tr>{% endfor %}
+</tbody></table></div>
+<form method="post"><label><input type="checkbox" name="confirm" value="EVET" required> Yukarıdaki {{changes|length}} değişikliği kontrol ettim ve onaylıyorum.</label><p><button type="submit">Eşitlemeyi uygula</button> <a href="{{url_for('depot_page')}}">Vazgeç</a></p></form>
+{% else %}<p>Şu anda eşitlenecek kayıt yok.</p>{% endif %}
+</section>{% endblock %}

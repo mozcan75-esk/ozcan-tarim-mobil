@@ -1,0 +1,17 @@
+{% extends 'base.html' %}{% block content %}
+<section class="card"><h1>Tarla faaliyeti #{{activity.id}} – {{activity.activity_type}}</h1>
+<p><b>Tarih:</b> {{activity.activity_date}} · <b>Sezon:</b> {{activity.season}} · <b>Parsel:</b> {{activity.parcel_code}} · <b>Uygulama alanı:</b> {{tr_num(activity.area_da,2)}} da</p>
+<form method="post" id="activity-edit"><input type="hidden" name="csrf_token" value="{{csrf}}">
+<div class="tablewrap"><table><thead><tr><th>Malzeme</th><th>Çeşit</th><th>Doz (birim/da)</th><th>Toplam miktar</th><th>Birim maliyet</th><th>Toplam maliyet</th></tr></thead><tbody>
+{% for r in lines %}<tr><td>{{r.item}}</td><td>{{r.item_detail or '—'}}</td>
+<td>{% if activity.activity_type=="Hasat" %}—{% else %}<input type="number" step="0.001" min="0.001" required name="rate_{{r.id}}" value="{{'%.3f'|format(r.quantity/activity.area_da)}}"> {{r.unit}}/da{% endif %}</td>
+<td>{{tr_num(r.quantity,3)}} {{r.unit}}</td><td>{{tr_num(r.unit_price,2)}} TL</td><td>{{tr_num(r.amount,2)}} TL</td></tr>
+{% else %}<tr><td colspan="6">Aktif malzeme kaydı bulunamadı.</td></tr>{% endfor %}
+</tbody></table></div>
+<h2>Faaliyetin mevcut toplam maliyeti: {{tr_num(total,2)}} TL</h2>
+<label>Açıklama / not<textarea name="note" rows="3">{{activity.note or ''}}</textarea></label>
+{% if lines %}<div class="formactions">{% if activity.activity_type!="Hasat" %}<button type="submit" name="action" value="save">Tüm malzemeleri birlikte güncelle</button>{% endif %}
+<button type="submit" name="action" value="cancel" formnovalidate onclick="return confirm('Bu faaliyetin tüm malzeme tüketimlerini birlikte iptal etmek istiyor musunuz?')" >Faaliyeti tamamen iptal et</button></div>{% endif %}
+</form>
+<p class="hint">Tüm miktarlar ve FIFO maliyetleri tek veritabanı işlemi içinde kontrol edilir. Bir malzeme için stok veya FIFO hatası oluşursa hiçbir değişiklik kaydedilmez. İptal, kayıtları silmez; pasif hale getirerek depo stoklarını geri kazandırır.</p>
+<p><a href="{{url_for('field_activities_page')}}">Faaliyet listesine dön</a></p></section>{% endblock %}

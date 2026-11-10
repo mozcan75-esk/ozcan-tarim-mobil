@@ -1,0 +1,14 @@
+{% extends 'base.html' %}{% block content %}
+<section class="card"><h1>Tarla faaliyetleri – Birlikte kayıtlar</h1>
+<p>Ekim, gübreleme ve diğer faaliyetlerde aynı anda tüketilen malzemeler tek başlıkta listelenir. Eski tekil işlemler İşlemler sayfasında kalır.</p>
+<form method="get" class="filter-grid">
+<label>Sezon<select name="season"><option value="">Tüm sezonlar</option>{% for s in seasons %}<option value="{{s}}" {% if season==s %}selected{% endif %}>{{s}}</option>{% endfor %}</select></label>
+<label>Parsel<select name="parcel"><option value="">Tüm parseller</option>{% for p in parcels %}<option value="{{p.code}}" {% if parcel==p.code %}selected{% endif %}>{{p.code}} – {{p.name}}</option>{% endfor %}</select></label>
+<div class="filter-actions"><button>Göster</button></div></form>
+<div class="tablewrap"><table><thead><tr><th>Tarih</th><th>Parsel</th><th>Faaliyet</th><th>Alan</th><th>Malzeme sayısı</th><th>Toplam maliyet</th><th>İncele</th></tr></thead><tbody>
+{% for r in records %}<tr><td>{{r.activity_date}}</td><td>{{r.parcel_code}} – {{r.parcel_name or ''}}</td><td>{{r.activity_type}}</td><td>{{tr_num(r.area_da,2)}} da</td><td>{{r.line_count}}</td><td>{{tr_num(r.total_cost,2)}} TL</td><td><a href="{{url_for('field_activity_detail',activity_id=r.id)}}">Faaliyeti aç</a></td></tr>
+{% else %}<tr><td colspan="7">Bu filtrede çoklu malzemeli faaliyet bulunamadı.</td></tr>{% endfor %}
+</tbody></table></div>
+<p class="hint">En yeni 300 faaliyet listelenir. Her faaliyetin ayrıntısında tüketilen tüm malzemeler ve maliyetler görülebilir.</p>
+<p><a href="{{url_for('operations_page')}}">İşlemler sayfasına dön</a></p></section>
+{% endblock %}

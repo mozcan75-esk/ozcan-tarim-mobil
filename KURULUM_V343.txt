@@ -1,0 +1,7 @@
+Özcan Tarım Windows/Web V3.4.3
+Baslat_Windows.bat ile açın.
+/iphone-yedek-raporu: iPhone JSON yedeğini doğrular, detaylarını gösterir ve ayrı mobil_yedek_arsivi klasörüne kaydeder.
+/iphone-yedek-arsiv: kayıtlı mobil veriyi tekrar inceleyin.
+/iphone-yedek-indir: kayıtlı mobil JSON dosyasını indirin.
+UYARI: Bu işlem canlı SQLite veritabanına aktarım değildir. PC verilerini silmez veya birleştirmez.
+Önce hem PC .db hem iPhone JSON yedeğini koruyun.

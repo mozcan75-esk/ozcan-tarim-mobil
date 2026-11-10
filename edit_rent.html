@@ -1,0 +1,11 @@
+{% extends 'base.html' %}{% block content %}<section class="card"><h1>Kira sözleşmesini düzenle</h1><p>Kayıt no: {{record.id}}. Alan, Parseller bölümündeki sezonluk icar kullanım alanından alınır.</p><form method="post" class="formgrid">
+<label>Kiraya veren<input name="landlord" value="{{record.landlord or ''}}" required></label>
+<label>Parsel<select name="parcel_code" id="rent-parcel">{% for p in parcels %}<option value="{{p.code}}" {% if p.code==record.parcel_code %}selected{% endif %}>{{p.code}} - {{p.name}}</option>{% endfor %}</select></label>
+<label>Sezon<select name="season" id="rent-season">{% for s in seasons %}<option {% if record.season==s %}selected{% endif %}>{{s}}</option>{% endfor %}</select></label>
+<label>İcar kullanım alanı (da)<input id="rent-area" readonly></label>
+<label>Başlangıç<input type="date" name="start_date" value="{{record.start_date or ''}}"></label><label>Bitiş<input type="date" name="end_date" value="{{record.end_date or ''}}"></label>
+<label>Kira TL/da<input type="number" name="rate_per_da" id="rent-rate" value="{{record.rate_per_da}}" required step="0.01" min="0"></label>
+<label>Yeni toplam kira (TL)<input id="rent-total" readonly></label>
+<label>Vade ve açıklama<input name="due_note" value="{{record.due_note or ''}}"></label>
+<p id="rent-warning" class="hint"></p><div class="formactions"><button id="rent-submit" type="submit">Değişiklikleri kaydet</button><a href="{{url_for('rents_page')}}">Vazgeç</a></div></form></section>
+<script>const leasedAreas={{leased_areas|tojson}};const parcel=document.getElementById('rent-parcel'),season=document.getElementById('rent-season'),area=document.getElementById('rent-area'),rate=document.getElementById('rent-rate'),total=document.getElementById('rent-total'),warn=document.getElementById('rent-warning'),submit=document.getElementById('rent-submit');function calc(){let a=Number((leasedAreas[season.value]||{})[parcel.value]||0);area.value=a.toLocaleString('tr-TR',{maximumFractionDigits:3});total.value=(a*Number(rate.value||0)).toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2});warn.textContent=a>0?'':'Seçilen parsel ve sezonda icar kullanım alanı tanımlı değil.';submit.disabled=a<=0;}[parcel,season,rate].forEach(e=>e.addEventListener('input',calc));calc();</script>{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}{% block content %}
+<h1>Veritabanı Yedekleme</h1>
+<p>Yedekler SQLite güvenli yedekleme yöntemiyle alınır. İşlemler mevcut kayıtları değiştirmez.</p>
+<div class="backup-actions">
+<form method="post" action="{{ url_for('backup_download') }}"><button type="submit">💾 DB Yedeğini İndir</button></form>
+<form method="post" action="{{ url_for('backup_daily_now') }}"><button type="submit">📅 Günlük Yedeği Kontrol Et</button></form>
+<form method="post" action="{{ url_for('backup_verify') }}"><button type="submit">🛡️ Test Kopyasını Doğrula</button></form>
+</div>
+<h2>Sunucudaki yedekler</h2><p>Uygulama başladığında günlük yedek alınır. Program sürekli açıksa günlük yedek için bu ekrandan kontrol başlatabilirsiniz. Son 14 yedek dosyası tutulur.</p>
+<div class="table-scroll"><table><thead><tr><th>Yedek</th><th>Boyut</th><th>Kontrol</th></tr></thead><tbody>
+{% for file in backups %}<tr><td>{{ file.name }}</td><td>{{ file.size_kb }} KB</td><td>{{ 'Sağlam' if file.ok else 'HATA' }}</td></tr>
+{% else %}<tr><td colspan="3">Henüz yedek bulunmuyor.</td></tr>{% endfor %}
+</tbody></table></div>
+<p><strong>Önemli:</strong> Test kopyası kontrolü canlı veritabanını geri yüklemez. Gerçek geri yükleme ayrıca, kontrollü şekilde yapılmalıdır. Yedeklerin bir kopyasını başka bir cihazda veya güvenli depoda saklayın.</p>
+{% endblock %}

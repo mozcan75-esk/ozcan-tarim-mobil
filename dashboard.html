@@ -1,0 +1,36 @@
+{% extends 'base.html' %}{% block content %}
+<style>
+.wrap{max-width:1600px}.overview-head{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin:4px 0 10px}.overview-head h1{font-size:clamp(1.25rem,2.3vw,1.8rem);margin:0}.overview-head label{font-size:.83rem;display:flex;gap:8px;align-items:center}.overview-head select{padding:5px 9px}
+.overview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.ov{background:white;border:1px solid #d8e2d9;border-radius:10px;padding:12px;min-width:0}.ov h2{font-size:.88rem;margin:0 0 5px}.ov .val{font-size:clamp(1.1rem,2vw,1.55rem);font-weight:750;white-space:nowrap}.ov .sub{font-size:.76rem;color:#607468;margin-top:4px}.ov.net{background:#eef7f0}.overview-detail{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;align-items:start}.overview-detail .ov{padding:9px 12px}.overview-detail .ov h2{margin-bottom:3px}.ov .detail{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;border-top:1px solid #edf0ed;padding:4px 0;font-size:.79rem;align-items:center}.ov .detail b{white-space:nowrap}.ov .pct{min-width:45px;text-align:right;color:#607468}.stock-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.stock-grid .ov{max-height:220px;overflow:auto}.compact-table{width:100%;border-collapse:collapse;font-size:.82rem}.compact-table td,.compact-table th{padding:5px;border-bottom:1px solid #edf0ed;text-align:left}.compact-table td:last-child,.compact-table th:last-child{text-align:right}.stock-title{display:flex;justify-content:space-between;gap:10px;align-items:center}.stock-title a{font-size:.8rem}.ov.negative .val{color:#9e3535}
+@media(max-width:1200px){.overview{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:650px){.overview,.overview-detail,.stock-grid{grid-template-columns:1fr}.ov .val{white-space:normal}}
+</style>
+<div class="overview-head"><h1>🌾 Özcan Tarım <small style="font-size:.55em;color:#607468">İşletme özeti</small></h1><form method="get"><label>Sezon <select name="season" onchange="this.form.submit()">{% for s in seasons %}<option value="{{s}}" {% if s==season %}selected{% endif %}>{{s}}</option>{% endfor %}</select></label></form></div>
+<div class="ov" style="margin:0 0 10px"><div class="stock-title"><div><strong>🌾 Ürün Deposu</strong><div class="sub">Hasat edilen ve satılmayı bekleyen ürünlerinizi görüntüleyin.</div></div><a href="{{url_for('product_warehouse_page')}}">Ürün deposunu aç →</a></div></div>
+<div class="overview">
+ <div class="ov"><h2>İşletmenin toplam arazisi</h2><div class="val">{{tr_num(operating_da,2)}} da</div><div class="sub">{{parcels.n}} aktif parsel</div></div>
+ <div class="ov"><h2>Sezon işlem yapılan arazi</h2><div class="val">{{tr_num(cultivated_da,2)}} da</div><div class="sub">{{worked_parcel_count}} faaliyet kaydı olan parsel · <a href="{{url_for('parcels_page',season=season)}}">Parseller</a></div></div>
+ <div class="ov"><h2>Net işletme sonucu</h2><div class="val">{{tr_num(net,2)}} TL</div><div class="sub">Gelir − gider · sezon içi sonuç</div></div>
+ <div class="ov"><h2>Dönüm başına net sonuç</h2><div class="val">{% if net_per_da is not none %}{{tr_num(net_per_da,2)}} TL/da{% else %}—{% endif %}</div><div class="sub">Sezonun işlenen alanına göre</div></div>
+</div>
+<div class="overview-detail">
+ <div class="ov"><h2>Toplam gelir <span class="val" style="float:right">{{tr_num(income_total,2)}} TL</span></h2><div style="clear:both"></div><div class="sub">{{season}} sezonu · ürüne göre satış gelirleri ve diğer gelirler</div>{% for r in income_breakdown %}<div class="detail"><span>{{r.label}}</span><b>{{tr_num(r.amount,2)}} TL</b><span class="pct">%{{tr_num(r.amount/income_total*100 if income_total else 0,1)}}</span></div>{% else %}<div class="sub">Gelir kaydı yok.</div>{% endfor %}</div>
+ <div class="ov"><h2>Toplam gider <span class="val" style="float:right">{{tr_num(expense_total,2)}} TL</span></h2><div style="clear:both"></div>{% for r in expense_breakdown %}<div class="detail"><span>{{r.label}}</span><b>{{tr_num(r.amount,2)}} TL</b><span class="pct">%{{tr_num(r.amount/expense_total*100 if expense_total else 0,1)}}</span></div>{% else %}<div class="sub">Gider kaydı yok.</div>{% endfor %}</div>
+</div>
+<div class="ov" style="margin-top:10px">
+ <div class="stock-title"><h2>💳 Ödemeler · {{season}} sezonu borç özeti</h2><a href="{{url_for('payments_page')}}">Ödemelere git →</a></div>
+ <div class="overview" style="margin:8px 0;grid-template-columns:repeat(3,minmax(0,1fr))">
+  <div class="ov"><h2>Toplam borç</h2><div class="val">{{tr_num(debt_total,2)}} TL</div></div>
+  <div class="ov"><h2>Ödenen</h2><div class="val">{{tr_num(debt_paid,2)}} TL</div></div>
+  <div class="ov"><h2>Kalan borç</h2><div class="val">{{tr_num(debt_remaining,2)}} TL</div></div>
+ </div>
+ <table class="compact-table"><thead><tr><th>İşlem</th><th>Toplam</th><th>Ödenen</th><th>Kalan</th></tr></thead><tbody>
+ {% for r in debt_by_type %}<tr><td>{{r.kind}}</td><td>{{tr_num(r.total,2)}} TL</td><td>{{tr_num(r.paid,2)}} TL</td><td>{{tr_num(r.remaining,2)}} TL</td></tr>
+ {% else %}<tr><td colspan="4">Bu sezon için kayıtlı borç yok.</td></tr>{% endfor %}</tbody></table>
+ <div class="sub">Borçlar icar sözleşmeleri ve hizmet kayıtlarından alınır; ödemeler giderleri ikinci kez artırmaz.</div>
+</div>
+<div class="stock-grid">
+ <div class="ov"><div class="stock-title"><h2>📦 Girdi deposu · elde kalan</h2><a href="{{url_for('depot_page')}}">Depoya git →</a></div><table class="compact-table"><thead><tr><th>Malzeme</th><th>Kalan</th></tr></thead><tbody>{% for s in stock if s.bought-s.used>0.0001 %}<tr><td>{{s.item}}{% if s.item_detail %} / {{s.item_detail}}{% endif %}</td><td>{{tr_num(s.bought-s.used,2)}} {{s.unit}}</td></tr>{% else %}<tr><td colspan="2">Elde kalan girdi yok.</td></tr>{% endfor %}</tbody></table></div>
+ <div class="ov"><div class="stock-title"><h2>🌾 Hasat ürünleri · satılmayan</h2><a href="{{url_for('product_warehouse_page')}}">Ürün Deposuna Git →</a></div><table class="compact-table"><thead><tr><th>Ürün</th><th>Kalan</th></tr></thead><tbody>{% for p in product_balances if p.remaining>0.0001 %}<tr><td>{{p.item}}</td><td>{{tr_num(p.remaining,2)}} {{p.unit}}</td></tr>{% else %}<tr><td colspan="2">Satılmamış ürün kaydı yok.</td></tr>{% endfor %}</tbody></table><div class="sub">Hasat − satış · tüm sezonlar; ürün adı bazında</div></div>
+</div>
+{% if warnings %}<details class="card"><summary>⚠️ Kontrol uyarıları ({{warnings|length}})</summary><ul>{% for w in warnings %}<li>{{w}}</li>{% endfor %}</ul></details>{% endif %}
+{% endblock %}

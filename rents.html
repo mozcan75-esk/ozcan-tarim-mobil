@@ -1,0 +1,20 @@
+{% extends 'base.html' %}{% block content %}
+<div class="pagehead"><div><h1>İcar / kira sözleşmeleri</h1><p class="muted">Kira hesabında tapu alanı değil, Parseller modülündeki sezona ait icar kullanım alanı esas alınır. Ödemeler ayrı Ödemeler modülündedir.</p></div></div>
+<section class="card"><h2>Yeni sözleşme</h2><form method="post" class="formgrid" id="rent-form">
+<label>Kiraya veren *<input name="landlord" required></label>
+<label>Parsel *<select name="parcel_code" id="rent-parcel" required>{% for p in parcels %}<option value="{{p.code}}">{{p.code}} - {{p.name}}</option>{% endfor %}</select></label>
+<label>Sezon *<select name="season" id="rent-season">{% for s in seasons %}<option>{{s}}</option>{% endfor %}</select></label>
+<label>İcar kullanım alanı (da)<input id="rent-area" readonly></label>
+<label>Başlangıç tarihi<input type="date" name="start_date"></label><label>Bitiş tarihi<input type="date" name="end_date"></label>
+<label>Kira (TL/da) *<input type="number" id="rent-rate" name="rate_per_da" min="0" step="0.01" required></label>
+<label>Toplam kira (TL)<input id="rent-total" readonly></label>
+<label class="wide">Vade / açıklama<input name="due_note"></label><p id="rent-warning" class="hint"></p><div class="formactions"><button type="submit" id="rent-submit">Sözleşmeyi kaydet</button></div></form></section>
+<section class="card"><h2>Sözleşmeler ve borç</h2><div class="tablewrap"><table><thead><tr><th>No</th><th>Kiraya veren</th><th>Parsel</th><th>Sezon</th><th>Sözleşme alanı</th><th>Parsellerdeki güncel icar alanı</th><th>Toplam kira</th><th>Ödenen</th><th>Kalan</th><th>İşlem</th></tr></thead><tbody>
+{% for r in rents %}<tr><td>{{r.id}}</td><td>{{r.landlord}}</td><td>{{r.parcel_code}} - {{r.parcel_name}}</td><td>{{r.season}}</td><td>{{tr_num(r.area_da,3)}} da</td><td>{{tr_num(r.current_leased_area,3)}} da</td><td>{{tr_num(r.total_amount,2)}} TL</td><td>{{tr_num(r.paid,2)}} TL</td><td>{{tr_num(r.total_amount-r.paid,2)}} TL</td><td><a href="{{url_for('edit_rent',record_id=r.id)}}">Düzenle</a></td></tr>
+{% else %}<tr><td colspan="10">Henüz sözleşme yok.</td></tr>{% endfor %}</tbody></table></div><p class="hint">Mevcut sözleşmeler otomatik değiştirilmez. Alanı farklı olanları Düzenle üzerinden kontrol ederek güncelleyin.</p></section>
+<script>
+const leasedAreas={{leased_areas|tojson}};
+const parcel=document.getElementById('rent-parcel'),season=document.getElementById('rent-season'),area=document.getElementById('rent-area'),rate=document.getElementById('rent-rate'),total=document.getElementById('rent-total'),warn=document.getElementById('rent-warning'),submit=document.getElementById('rent-submit');
+function calc(){let a=Number((leasedAreas[season.value]||{})[parcel.value]||0);area.value=a.toLocaleString('tr-TR',{maximumFractionDigits:3});total.value=(a*Number(rate.value||0)).toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2});warn.textContent=a>0?'':'Bu parselin seçilen sezonda icar kullanım alanı yok. Önce Parseller bölümünde tanımlayın.';submit.disabled=a<=0;}
+[parcel,season,rate].forEach(e=>e.addEventListener('input',calc));calc();
+</script>{% endblock %}

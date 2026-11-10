@@ -1,0 +1,8 @@
+{% extends 'base.html' %}{% block content %}
+<div class="pagehead"><div><p class="eyebrow">KAYIT GÜVENLİĞİ</p><h1>Kayıt Yönetimi</h1><p class="muted">Kontrol, iptal ve değişiklik kayıtlarına tek yerden ulaşın. Bu ekran kayıtları değiştirmez.</p></div></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:16px">
+<section class="card"><h2>🛡️ Veri Kontrolü</h2><p>Stok ve kayıt tutarlılığını inceleyin; olası hataları görün.</p><p><a href="{{ url_for('data_check_page') }}">Veri kontrolüne git →</a></p></section>
+<section class="card"><h2>↩️ İptal / Geri Al</h2><p>Hatalı işlemleri mevcut güvenlik kurallarıyla yönetin.</p><p><a href="{{ url_for('record_manager') }}">İptal / Geri Al'a git →</a></p></section>
+<section class="card"><h2>🕒 Değişiklik Geçmişi</h2><p>Yapılan değişiklik ve iptallerin geçmişini inceleyin.</p><p><a href="{{ url_for('change_history') }}">Değişiklik geçmişine git →</a></p></section>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}{% block content %}
+<div class="pagehead"><div><h1>🌾 Ürün Deposu</h1><p class="muted">Hasat edilen ürünler, satışlar ve depoda kalan miktarlar (tüm sezonlar).</p></div></div>
+<section class="card"><h2>Hasat ürünleri stok durumu</h2>
+<div class="tablewrap"><table><thead><tr><th>Ürün</th><th>Toplam hasat</th><th>Toplam satış</th><th>Depoda kalan</th></tr></thead><tbody>
+{% for r in balances %}<tr><td>{{r.item}}</td><td>{{tr_num(r.harvested,2)}} {{r.unit}}</td><td>{{tr_num(r.sold,2)}} {{r.unit}}</td><td><strong>{{tr_num(r.remaining,2)}} {{r.unit}}</strong>{% if r.remaining < -0.001 %} ⚠️ Stok açığı{% endif %}</td></tr>
+{% else %}<tr><td colspan="4">Henüz hasat veya satış kaydı bulunmuyor.</td></tr>{% endfor %}
+</tbody></table></div>
+<p class="hint">Hasat kaydı ürün stoğunu artırır; satış stoğu azaltır. Balya stoğu henüz bu hesaplamaya dahil değildir; balya üretimi ve satışı sonraki geliştirmede ayrıca bağlanacaktır.</p>
+<p><a href="{{url_for('operations_page')}}">İşlemler ve Faaliyetler → Hasat / Satış</a></p></section>
+<section class="card"><h2>Ürün deposundan satış yap</h2>
+<p class="hint">Önce hasat veya balya üretimi kaydı oluşturun. Stokta bulunmayan ürün satılamaz. Balya satışı adet ve TL/adet üzerinden yapılır.</p>
+<form method="post" action="{{url_for('sell_warehouse_product')}}" class="formgrid" id="sale-form">
+<input type="hidden" name="csrf_token" value="{{csrf}}">
+<label>Sezon<select name="season">{% for s in seasons %}<option>{{s}}</option>{% endfor %}</select></label>
+<label>Satış tarihi<input type="date" name="sale_date" value="{{today}}" required></label>
+<label>Ürün<select name="item" id="sale-item" required><option value="">Depodaki ürünü seçin</option>{% for r in balances %}{% if r.remaining>0.0001 and r.item in ('Arpa','Buğday','Arpa Samanı','Buğday Samanı') %}<option value="{{r.item}}">{{r.item}} — {{tr_num(r.remaining,2)}} kg</option>{% endif %}{% endfor %}</select></label>
+<p class="hint">Parsel seçimi gerekmez: satışlar hasat sırasına göre FIFO ile parsellere dağıtılır.</p>
+<label id="sale-kg-box">Satılan miktar (kg)<input name="quantity" id="sale-kg" type="number" min="0.001" step="any"></label>
+<label id="sale-count-box" style="display:none">Satılan balya adedi<input name="bale_count" id="sale-count" type="number" min="1" step="1"></label>
+<label id="sale-price-box">Satış fiyatı (TL/kg)<input name="unit_price" type="number" min="0.01" step="any" required></label>
+<label>Açıklama<input name="note"></label><div class="formactions"><button type="submit">Depodan satış yap</button></div>
+</form></section>
+<script>(function(){const item=document.getElementById('sale-item'),kg=document.getElementById('sale-kg-box'),count=document.getElementById('sale-count-box'),price=document.getElementById('sale-price-box');function sync(){let bale=item.value.endsWith('Samanı');kg.style.display=bale?'none':'';count.style.display=bale?'':'none';kg.querySelector('input').disabled=bale;count.querySelector('input').disabled=!bale;price.firstChild.textContent=bale?'Satış fiyatı (TL/balya)':'Satış fiyatı (TL/kg)';}item.addEventListener('change',sync);sync();})();</script>
+<section class="card"><h2>Satış geçmişi ve FIFO parsel dağılımı</h2>
+<p class="hint">En son 150 satış kaydı. Dağılım hasat tarihi ve kayıt sırasına göre hesaplanır; gelir ikinci kez kaydedilmez.</p>
+<div class="tablewrap"><table><thead><tr><th>Tarih</th><th>Ürün</th><th>Miktar</th><th>Gelir</th><th>Hasat parseli / dağılım</th></tr></thead><tbody>
+{% for row in sales_history %}<tr><td>{{row.sale.op_date}}</td><td>{{row.sale.item}}</td><td>{{tr_num(row.sale.quantity,2)}} kg</td><td>{{tr_num(row.sale.amount,2)}} TL</td><td>{% for src in row.sources %}{{src.parcel or 'Parsel belirtilmemiş'}} ({{src.season}}): {{tr_num(src.quantity,2)}} kg / {{tr_num(src.amount,2)}} TL{% if not loop.last %}; {% endif %}{% else %}FIFO eşleştirmesi bulunamadı{% endfor %}</td></tr>
+{% else %}<tr><td colspan="5">Henüz satış kaydı yok.</td></tr>{% endfor %}
+</tbody></table></div>
+{% if fifo_issues %}<p class="hint">{{fifo_issues|length}} satış kaydında tarihe göre yeterli hasat bulunamadı; tarihleri kontrol edin.</p>{% endif %}
+</section>{% endblock %}

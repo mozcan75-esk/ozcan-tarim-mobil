@@ -1,0 +1,24 @@
+{% extends 'base.html' %}{% block content %}
+<section class="card"><h1>Tahmini başa baş verim · V1.9.21</h1>
+<p>Öngörü raporu: seçilen maliyet ve destek senaryosuna göre tahılın başa baş verimini hesaplar. Balya geliri dahil edilmez.</p>
+<form method="get" class="formgrid">
+<label>Sezon<select name="season">{% for s in seasons %}<option value="{{s}}" {% if s==season %}selected{% endif %}>{{s}}</option>{% endfor %}</select></label>
+<label>Parsel<select name="parcel"><option value="">Tüm parseller</option>{% for p in parcels %}<option value="{{p.code}}" {% if p.code==selected %}selected{% endif %}>{{p.code}} – {{p.name}}</option>{% endfor %}</select></label>
+<label>Beklenen satış fiyatı (TL/kg)<input type="number" name="price" min="0.01" max="100000" step="0.01" value="{{price}}" required></label>
+<label>Hedef verim (kg/da)<input type="number" name="yield_da" min="0" max="100000" step="0.1" value="{{target}}" required></label>
+<label>Maliyet senaryosu<select name="cost_mode"><option value="recorded" {% if cost_mode=='recorded' %}selected{% endif %}>Kayıtlı gider + ilave tahmini gider</option><option value="forecast" {% if cost_mode=='forecast' %}selected{% endif %}>Yalnızca tahmini toplam gider</option></select></label>
+<label>Tahmini gider (TL/da)<input type="number" name="future_cost_da" min="0" max="100000" step="0.01" value="{{future_cost_da}}" required></label>
+<label>Destek senaryosu<select name="support_mode"><option value="recorded" {% if support_mode=='recorded' %}selected{% endif %}>Kayıtlı destek dağılımı</option><option value="forecast" {% if support_mode=='forecast' %}selected{% endif %}>Beklenen destek</option></select></label>
+<label>Beklenen destek (TL/da)<input type="number" name="expected_support_da" min="0" max="100000" step="0.01" value="{{expected_support_da}}" required></label>
+<button type="submit">Yeniden hesapla</button></form></section>
+<section class="card"><h2>Parsel bazında tahmini verim ve kâr</h2><div class="tablewrap"><table>
+<thead><tr><th>Parsel</th><th>Ekili ürün / çeşit</th><th>Alan (da)</th><th>Gider + bakım (TL)</th><th>Destek (TL)</th><th>Karşılanacak maliyet (TL)</th><th>Başa baş verim (kg/da)</th><th>Hedef verim (kg/da)</th><th>Hedefte tahmini sonuç (TL)</th></tr></thead><tbody>
+{% for r in rows %}<tr><td>{{r.code}} – {{r.name}}</td><td>{{r.crop}}</td><td>{{tr_num(r.area,2)}}</td><td>{{tr_num(r.cost,2)}}</td><td>{{tr_num(r.support,2)}}</td><td>{{tr_num(r.required,2)}}</td><td><b>{{tr_num(r.threshold,2)}}</b></td><td>{{tr_num(target,2)}}</td><td>{{tr_num(r.expected_net,2)}}</td></tr>
+{% else %}<tr><td colspan="9">Uygun parsel bulunamadı.</td></tr>{% endfor %}
+</tbody></table></div>
+<p class="hint">Formül: başa baş kg/da = maks(0, seçilen gider senaryosu − seçilen devlet desteği) / (alan × beklenen tahıl fiyatı). Balya satışları ve diğer gelirler hariçtir.</p>
+<p class="hint">Hedefte tahmini sonuç = (hedef kg/da × alan × fiyat) − karşılanacak maliyet. Bu bir senaryodur, gerçekleşmiş kâr değildir. Fiyat tüm parseller için aynı kabul edilir.</p>
+<p class="hint">Kayıtlı gider modunda tahmini gider alanına henüz kaydedilmemiş masrafları (TL/da) girin. Yalnızca tahmini toplam gider modunda bütün beklenen giderleri TL/da olarak girin; kayıtlı giderler ayrıca eklenmez. Tahmini destek modunda beklenen destek TL/da kullanılır. Ödenmemiş icar yükümlülüğünü tahmini giderinize dahil edin. Bu rapor hiçbir kayıt oluşturmaz.</p>
+{% if unallocated or unallocated_maintenance %}<p class="hint">Parsellere dağıtılamayan destek: {{tr_num(unallocated,2)}} TL; dağıtılamayan bakım: {{tr_num(unallocated_maintenance,2)}} TL. Bunlar yukarıdaki parsel sonuçlarında yoktur.</p>{% endif %}
+</section><p><a href="{{url_for('reports_page',season=season)}}">Genel raporlara dön</a></p>
+{% endblock %}

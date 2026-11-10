@@ -1,0 +1,15 @@
+ÖZCAN TARIM Windows/Web V3.5.1 — WinError 32 düzeltmesi
+
+Bu paket Windows V3.5.0 tabanlıdır. iPhone uygulamasını güncellemeniz gerekmez.
+
+KURULUM:
+1. Çalışan Özcan Tarım komut penceresini kapatın.
+2. Mevcut çalışan ozcan_tarim.db dosyanızın bir kopyasını ayrı klasöre alın.
+3. Bu ZIP'i AYRI bir klasöre çıkarın.
+4. Eski çalışan klasörünüzdeki güncel ozcan_tarim.db dosyasını yeni klasöre KOPYALAYIN.
+5. Baslat_Windows.bat dosyasını çalıştırın.
+6. http://127.0.0.1:5000/tam-yedek adresinden önce önizleyin, sonra onaylayın.
+
+DÜZELTME: Windows'ta açık SQLite dosyasının os.replace ile değiştirilmesi yerine SQLite online backup API ile aktarım yapılır.
+Aktarım öncesi otomatik veritabanı yedeği alınır. Hata halinde yedeği saklayın.
+Gerçek Windows ortamında uçtan uca test yapılmamıştır; gerçek verilerin kopyasında SQLite aktarımı ve bütünlük testi başarılıdır.

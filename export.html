@@ -1,0 +1,8 @@
+{% extends 'base.html' %}{% block content %}
+<h1>Excel Rapor Al</h1><p>Raporlar mevcut kayıtlardan üretilir; veritabanı değişmez.</p>
+<form method="get" action="{{ url_for('report_export') }}">
+<label>Rapor türü <select name="tur"><option value="ekonomi">Üretim Ekonomisi</option><option value="parsel">Parsel İşlem Özeti</option><option value="islemler">İşlem Dökümü</option><option value="stok">Girdi Alımları</option><option value="destek">Devlet Destekleri</option><option value="icar">İcar Sözleşmeleri</option><option value="bakim">Makine Bakımı</option></select></label>
+<label>Sezon (boş = tümü) <input name="season" placeholder="2026/2027"></label>
+<input type="hidden" name="format" value="xlsx"><button type="submit">Excel İndir (.xlsx)</button>
+</form><p>Not: Parsel işlem özeti, FIFO parsel kârlılık raporunun yerine geçmez. Excel raporları veritabanı yedeği değildir.</p>
+{% endblock %}

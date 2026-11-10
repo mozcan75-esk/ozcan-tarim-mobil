@@ -1,0 +1,26 @@
+{% extends 'base.html' %}{% block content %}
+<section class="card"><h1>Tohum çeşidi ve verim analizi · V1.4</h1>
+<p>Ekim çeşidi İşlemler kayıtlarından otomatik belirlenir. Hasat yapılmadıysa verim hesaplanmaz.</p>
+<form method="get" class="formgrid">
+<label>Sezon<select name="season">{% for s in seasons %}<option value="{{s}}" {% if s==season %}selected{% endif %}>{{s}}</option>{% endfor %}</select></label>
+<label>Parsel<select name="parcel"><option value="">Tüm parseller</option>{% for p in parcel_options %}<option value="{{p.code}}" {% if p.code==parcel_filter %}selected{% endif %}>{{p.code}} – {{p.name}}</option>{% endfor %}</select></label>
+<button type="submit">Göster</button></form></section>
+<section class="card"><h2>Çeşit karşılaştırması</h2><div class="tablewrap"><table>
+<thead><tr><th>Ürün</th><th>Çeşit</th><th>Parsel sayısı</th><th>Alan (da)*</th><th>Tohum (kg)</th><th>Tohum (kg/da)*</th><th>Hasat (kg)**</th><th>Verim (kg/da)**</th></tr></thead><tbody>
+{% for r in summary %}<tr><td>{{r.crop}}</td><td>{{r.variety}}</td><td>{{r.parcels}}</td>
+<td>{{tr_num(r.area,2)}}</td><td>{{tr_num(r.seed,2)}}</td><td>{{tr_num(r.seed_da,2) if r.seed_da is not none else '—'}}</td>
+<td>{{tr_num(r.harvest,2) if r.harvest_parcels else 'Henüz yok'}}</td><td>{{tr_num(r.yield_da,2) if r.yield_da is not none else 'Henüz yok'}}</td></tr>
+{% else %}<tr><td colspan="8">Bu sezonda tanınan ekim kaydı bulunamadı.</td></tr>{% endfor %}
+</tbody></table></div></section>
+<section class="card"><h2>Parsel bazında ayrıntı</h2><div class="tablewrap"><table>
+<thead><tr><th>Parsel</th><th>Ürün / Çeşit</th><th>Alan (da)*</th><th>Tohum (kg)</th><th>Tohum (kg/da)*</th><th>Hasat (kg)**</th><th>Verim (kg/da)**</th></tr></thead><tbody>
+{% for r in rows %}<tr><td>{{r.parcel}}</td><td>{{r.crop}} / {{r.variety}}{% if r.mixed %} (karışık ekim){% endif %}</td>
+<td>{{tr_num(r.area,2)}}</td><td>{{tr_num(r.seed,2)}}</td><td>{{tr_num(r.seed_da,2) if r.seed_da is not none else '—'}}</td>
+<td>{{tr_num(r.harvest,2) if r.harvest is not none else '—'}}</td><td>{{tr_num(r.yield_da,2) if r.yield_da is not none else '—'}}</td></tr>
+{% else %}<tr><td colspan="7">Ekim kaydı yok.</td></tr>{% endfor %}
+</tbody></table></div>
+<p class="hint">* Alan, parselin kayıtlı toplam alanıdır. Kısmi ekim varsa dönüm başına değerler kesin değildir.</p>
+<p class="hint">** Hasat yalnızca parselde tek çeşit ekilmişse o çeşide bağlanır. Birden çok çeşit ekilmişse verim dağıtılmaz. Hasat yoksa sıfır verim varsayılmaz.</p>
+<p class="hint">Bu ilk sürüm verim analizidir; çeşit bazında kesin net kâr hesabı değildir.</p></section>
+<p><a href="{{url_for('reports_page',season=season)}}">Genel raporlara dön</a></p>
+{% endblock %}

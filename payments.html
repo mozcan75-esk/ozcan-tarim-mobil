@@ -1,0 +1,11 @@
+{% extends 'base.html' %}{% block content %}
+<div class="pagehead"><div><h1>Ödemeler ve Borçlar</h1><p class="muted">Tarla işlemleri ve icar kayıtlarından gelen borçlar. Ödemeler ikinci kez gider oluşturmaz.</p></div></div>
+<section class="card"><h2>Borç özeti</h2><p><strong>Toplam:</strong> {{tr_num(total,2)}} TL &nbsp; | &nbsp; <strong>Ödenen:</strong> {{tr_num(paid,2)}} TL &nbsp; | &nbsp; <strong>Kalan:</strong> {{tr_num(total-paid,2)}} TL</p>
+<p class="hint">İcar borçları icar sözleşmelerinden, biçerdöver/balya/nakliye borçları hizmet kayıtlarından alınır. Önceden yapılmış fakat burada kaydedilmemiş ödemeler otomatik ödenmiş sayılmaz; eski ödemeleri kontrol edin.</p></section>
+<section class="card"><h2>Borçlar ve ödeme kaydı</h2><div class="tablewrap"><table><thead><tr><th>Tarih</th><th>Sezon</th><th>Parsel</th><th>İşlem</th><th>Alacaklı</th><th>Toplam</th><th>Ödenen</th><th>Kalan</th><th>Ödeme yap</th></tr></thead><tbody>
+{% for r in debts %}<tr><td>{{r.dt}}</td><td>{{r.season}}</td><td>{{r.parcel_code}}</td><td>{{r.kind}}</td><td>{{r.creditor}}</td><td>{{tr_num(r.total,2)}}</td><td>{{tr_num(r.paid,2)}}</td><td><strong>{{tr_num(r.total-r.paid,2)}}</strong></td><td>
+{% if r.total-r.paid>0.005 %}<form method="post"><input type="hidden" name="csrf_token" value="{{csrf}}"><input type="hidden" name="source" value="{{r.source}}"><input type="hidden" name="id" value="{{r.id}}"><input type="date" name="payment_date" value="{{today}}" required><input type="number" name="amount" min="0.01" max="{{'%.2f'|format(r.total-r.paid)}}" step="0.01" placeholder="Ödeme TL" required><input name="note" placeholder="Açıklama"><button type="submit">Ödemeyi kaydet</button></form>{% else %}Ödendi{% endif %}
+</td></tr>{% else %}<tr><td colspan="9">Henüz borç kaydı yok.</td></tr>{% endfor %}
+</tbody></table></div></section>
+<section class="card"><h2>Ödeme geçmişi</h2><div class="tablewrap"><table><thead><tr><th>Tarih</th><th>Parsel</th><th>İşlem</th><th>Tutar</th><th>Açıklama</th></tr></thead><tbody>{% for p in history %}<tr><td>{{p.dt}}</td><td>{{p.parcel_code}}</td><td>{{p.detail}}</td><td>{{tr_num(p.amount,2)}} TL</td><td>{{p.note}}</td></tr>{% else %}<tr><td colspan="5">Henüz ödeme yok.</td></tr>{% endfor %}</tbody></table></div></section>
+{% endblock %}
