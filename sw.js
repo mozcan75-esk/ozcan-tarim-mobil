@@ -1,6 +1,6 @@
 // V3.1.3: network-first navigation and stale-while-revalidate assets.
-const CACHE = 'ozcan-test-v405';
-const FILES = ['./index.html', './style.css?v=405', './app.js?v=405', './combined318.js?v=405', './extended.js?v=405', './dashboard.js?v=405', './ui314.js?v=405', './ui315.js?v=405', './harvest319.js?v=405', './crop320.js?v=405', './season322.js?v=405', './harvest323.js?v=405', './bales324.js?v=405', './profit325.js?v=405', './records357.js?v=405', './depot358.js?v=405', './mobile359.js?v=405', './mobile405.js?v=405', './manifest.webmanifest'];
+const CACHE = 'ozcan-test-v406';
+const FILES = ['./index.html', './style.css?v=406', './app.js?v=406', './combined318.js?v=406', './extended.js?v=406', './dashboard.js?v=406', './ui314.js?v=406', './ui315.js?v=406', './harvest319.js?v=406', './crop320.js?v=406', './season322.js?v=406', './harvest323.js?v=406', './bales324.js?v=406', './profit325.js?v=406', './records357.js?v=406', './depot358.js?v=406', './mobile359.js?v=406', './mobile406.js?v=406', './manifest.webmanifest'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)).then(() => self.skipWaiting()));
 });

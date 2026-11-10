@@ -1,1 +1,1 @@
-V4.0.5: V4.0.4 ekran kilitlenmesi olasiligina neden olan gezinme izleyicisi kaldirildi. Altı ana menü ve önceki veri yapısı korundu. Mevcut cihaz kayıtları ancak aynı site/origin depolamasında görünür; yeni siteye otomatik aktarılmaz.
+V4.0.6: Giderler, İşlemler, Gelirler ana ekranlarında işlem arama; ayrıntı ekranlarında Yeni kayıt ve Kayıtları gör kısa yolları; aynı kayıt tabloları, arama, süzme ve Düzenle mekanizması korunmuştur. Depo, stok, hesaplama ve IndexedDB kodları değiştirilmemiştir. Telefon testi yapılmadı.

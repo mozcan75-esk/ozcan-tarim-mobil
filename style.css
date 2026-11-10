@@ -150,3 +150,12 @@ main>.notice{font-size:12px;padding:9px 11px;margin:0 0 10px}
 .v404-stock-link{float:right;font-size:12px;padding:5px 8px;border-radius:8px}
 .v404-back{position:relative;margin:8px 0 12px;background:#e9f3eb;color:#176c43;border:0;border-radius:9px;padding:9px 12px;font-weight:700}
 @media(min-width:650px){.v404-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* V4.0.6: Consistent records workflow. Does not affect calculations. */
+.v406-hub-search{margin:12px 0 16px}.v406-hub-search label{font-size:13px;font-weight:650;color:#32543e;display:block}
+.v406-filter{display:block;width:100%;box-sizing:border-box;margin-top:6px;border:1px solid #c4d5c9;border-radius:11px;padding:12px;font-size:16px;background:#fff}
+.v404-tiles button[hidden]{display:none!important}.v406-noresult{padding:12px;color:#66746a}
+.v406-toolbar{padding:12px;margin:0 0 16px;border-radius:12px;background:#edf5ef;border:1px solid #d5e6da}
+.v406-crumb{display:block;font-size:12px;color:#486454;margin-bottom:9px;font-weight:600}
+.v406-actions{display:flex;gap:8px;flex-wrap:wrap}.v406-action{flex:1;min-width:125px;border-radius:9px;padding:11px 8px;border:1px solid #a8c8b2;background:#fff;color:#155e38;font-weight:700;font-size:14px}
+.v406-action[hidden]{display:none}.v404-tiles button:focus-visible,.v406-action:focus-visible{outline:3px solid #4e9e6d;outline-offset:2px}
