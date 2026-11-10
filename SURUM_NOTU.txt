@@ -1,1 +1,1 @@
-V4.0.6: Giderler, İşlemler, Gelirler ana ekranlarında işlem arama; ayrıntı ekranlarında Yeni kayıt ve Kayıtları gör kısa yolları; aynı kayıt tabloları, arama, süzme ve Düzenle mekanizması korunmuştur. Depo, stok, hesaplama ve IndexedDB kodları değiştirilmemiştir. Telefon testi yapılmadı.
+V4.0.7: Ayarlar/Tanımlamalar, mevcut inputs koleksiyonuyla ortak girdi tanımları, ürün seçim önerileri, yedekleme erişimi. Veritabanı şeması ve mali hesaplamalar değişmedi.

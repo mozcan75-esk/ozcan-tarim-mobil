@@ -159,3 +159,5 @@ main>.notice{font-size:12px;padding:9px 11px;margin:0 0 10px}
 .v406-crumb{display:block;font-size:12px;color:#486454;margin-bottom:9px;font-weight:600}
 .v406-actions{display:flex;gap:8px;flex-wrap:wrap}.v406-action{flex:1;min-width:125px;border-radius:9px;padding:11px 8px;border:1px solid #a8c8b2;background:#fff;color:#155e38;font-weight:700;font-size:14px}
 .v406-action[hidden]{display:none}.v404-tiles button:focus-visible,.v406-action:focus-visible{outline:3px solid #4e9e6d;outline-offset:2px}
+
+#settings407{position:absolute;right:12px;top:8px;z-index:15;width:auto;padding:8px 11px;border-radius:10px;background:#f1f7f1;color:#185c3d;border:1px solid #c5d7c9;font-weight:700}.settings407-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 4px;border-bottom:1px solid #dce8df}.settings407-row button{width:auto;font-size:12px;padding:7px 10px}#settings407Panel details{margin:12px 0}#settings407Panel form{display:grid;gap:10px;margin:12px 0}
