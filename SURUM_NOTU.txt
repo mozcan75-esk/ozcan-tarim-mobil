@@ -1,1 +1,1 @@
-V4.0.12: Ayarlarda yeni girdi eklendiğinde veya adı değiştirildiğinde Ekim/Gübreleme birleşik faaliyet listeleri yenilenir. Seçili malzeme ve oranlar mümkün olduğunca korunur. Yeni tanımlar stok alımıyla aynı IndexedDB girdi listesindedir. Muhasebe ve stok yazma kodu değiştirilmedi.
+V4.0.13: Giderler > Girdi Alımı formunda önce girdi türü, sonra Ayarlar tanımlarından malzeme seçilir. Stok ve muhasebe kodları değiştirilmedi.
