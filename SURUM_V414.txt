@@ -1,0 +1,1 @@
+V4.0.14 — Ürün karşılığı parsel raporu. Salt okunur; fiyat tercihleri tarayıcı yerel saklamasında. Sınırlamalar: yalnızca açıkça bağlanan kayıtlar, kesin net kâr değildir.
