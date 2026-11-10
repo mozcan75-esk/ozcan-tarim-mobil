@@ -27,7 +27,30 @@ const lots=buys.filter(m=>m.date<=x.date).sort((a,b)=>a.date.localeCompare(b.dat
 for(const m of used.filter(m=>m.date<=x.date).sort((a,b)=>a.date.localeCompare(b.date)||Number(a.source_id||0)-Number(b.source_id||0)||String(a.id).localeCompare(String(b.id)))){let q=Number(m.quantity);for(const lot of lots){const take=Math.min(q,lot.left);lot.left-=take;q-=take;if(q<=1e-8)break}if(q>1e-8)throw Error('Önceki kullanım alış tarihinden önce. FIFO hesaplanamadı')}
 let need=x.quantity, fifoCost=0;for(const lot of lots){const take=Math.min(need,lot.left);fifoCost+=take*lot.price;need-=take;if(need<=1e-8)break}if(need>1e-8)throw Error('İşlem tarihinde yeterli stok yok');const unitCost=fifoCost/x.quantity;const total=Math.round(x.quantity*unitCost*100)/100;const id=crypto.randomUUID();const movement={id,kind:'use',input_id:x.input_id,date:x.date,quantity:x.quantity,unit_price:unitCost,total,parcel_code:x.parcel_code,area_da:x.area_da,per_da:x.per_da};const operation={id:crypto.randomUUID(),op_date:x.date,season:x.season,parcel_code:x.parcel_code,op_type:'Girdi kullanımı',item:input.name,quantity:x.quantity,unit:input.unit,unit_price:unitCost,amount:total,direction:'Gider',stock_move_id:id,area_da:x.area_da,per_da:x.per_da};movement.source_operation_id=operation.id;await tx(['stockMoves','operations'],'readwrite',t=>{t.objectStore('stockMoves').add(movement);t.objectStore('operations').add(operation)});e.target.reset();$('useForm').elements.date.value=localDate();await render()}catch(err){alert(err.message)}};
 for(const b of document.querySelectorAll('[data-tab]'))b.onclick=()=>{for(const p of document.querySelectorAll('.panel'))p.hidden=p.id!==b.dataset.tab;for(const n of document.querySelectorAll('[data-tab]'))n.classList.toggle('selected',n===b)};
-$('export').onclick=async()=>{const data={format:'ozcan-mobile-test-v3',exportedAt:new Date().toISOString(),appVersion:'3.5.2'};for(const s of stores)data[s]=await all(s);const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='Ozcan_Tarim_Tam_Yedek_'+localDate()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);$('status').textContent='Yedek indirildi. Telefon dışında da saklayın.'};
+// V5.3.1: iPhone-safe backup export. Never modifies IndexedDB.
+let lastBackupUrl=null;
+$('export').onclick=async()=>{
+ const status=$('status'),button=$('export'); button.disabled=true;
+ status.textContent='Yedek hazırlanıyor…';
+ try{
+  const data={format:'ozcan-mobile-test-v3',exportedAt:new Date().toISOString(),appVersion:'5.3.1'};
+  for(const store of stores)data[store]=await all(store);
+  const json=JSON.stringify(data,null,2);
+  const check=JSON.parse(json);
+  if(!Array.isArray(check.parcels)||!Array.isArray(check.operations))throw Error('Yedek doğrulanamadı');
+  const blob=new Blob([json],{type:'application/json'});
+  const filename='Ozcan_Tarim_Mobil_Yedek_'+localDate()+'.json';
+  if(lastBackupUrl)URL.revokeObjectURL(lastBackupUrl);
+  lastBackupUrl=URL.createObjectURL(blob);
+  const link=$('backupManualLink');
+  link.href=lastBackupUrl;link.download=filename;link.hidden=false;
+  link.textContent='Yedek dosyasını aç / indir ('+(blob.size/1024).toFixed(1)+' KB)';
+  // On iOS the automatic download may be blocked after asynchronous IndexedDB reads.
+  // Keep a real user-clickable link as a fallback, rather than reporting false success.
+  status.textContent='Yedek hazır ('+stores.length+' kayıt tablosu). Aşağıdaki bağlantıya dokunup Dosyalar’a kaydet. Otomatik indirme başlatılmadı.';
+ }catch(err){status.textContent='Yedek oluşturulamadı: '+(err?.message||String(err));}
+ finally{button.disabled=false;}
+};
 $('import').onchange=async e=>{try{const f=e.target.files[0];if(!f)return;const data=JSON.parse(await f.text());if(!['ozcan-mobile-test-v1','ozcan-mobile-test-v2','ozcan-mobile-test-v3'].includes(data.format)||!Array.isArray(data.parcels)||!Array.isArray(data.operations))throw Error('Uyumsuz yedek');for(const s of stores){if(!Array.isArray(data[s]))throw Error('Yedekte kayıt türü eksik: '+s);const key=s==='parcels'?'code':'id';const ids=new Set();for(const x of data[s]){if(!x||typeof x!=='object'||!x[key]||ids.has(String(x[key])))throw Error('Hatalı/tekrarlanan kimlik: '+s);ids.add(String(x[key]))}}if(!confirm('DİKKAT: Telefondaki TÜM kayıtlar yedekteki kayıtlarla değiştirilecek. Önce mevcut verilerin JSON yedeğini aldınız mı?'))return;await tx(stores,'readwrite',t=>{for(const s of stores){const st=t.objectStore(s);st.clear();for(const x of data[s]||[])st.add(x)}});await render();$('status').textContent='Yedek geri yüklendi.'}catch(err){$('status').textContent='Hata: '+err.message}finally{e.target.value=''}};
 function localDate(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 for(const id of ['operationForm','purchaseForm','useForm'])$(id).elements[id==='operationForm'?'op_date':'date'].value=localDate();
