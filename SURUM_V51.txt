@@ -1,0 +1,1 @@
+Özcan Tarım Mobil V5.1 — V5.0 kararlı paket üzerine. Tek tarla faaliyeti ve hasat (ürün + traktör motorini + biçerdöver hizmeti). Eski kayıt formları silinmedi, görünümden kaldırıldı. JSON yedeği alın. Aynı yayın klasöründeki tüm dosyaları değiştirin.

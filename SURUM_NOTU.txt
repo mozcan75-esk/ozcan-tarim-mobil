@@ -1,1 +1,5 @@
-V3.2.6: Parsel kârlılık tablosunda sezonluk işlenen alanı bulunmayan parsellerin kayıtlı alanını * ile gösterir. Bu değer tahmindir; kesin işlenen alan değildir. P010 icar doğru tutarı mobil yedekte zaten 14.704 TL olduğundan mobil kayıtlara müdahale edilmez. Bilgisayar DB düzeltmesi ayrı ve özel dosyadır.
+Özcan Tarım Mobil V5.0
+Kararlı temel: V4.0.13.
+V4.0.14–V4.0.17 arasındaki çalışmayan Ürün Karşılığı Parsel Kârlılığı denemeleri dahil değildir.
+Yalnızca sürüm etiketi ve önbellek anahtarı güncellenmiştir.
+Kurulumdan önce JSON yedeği alın.
