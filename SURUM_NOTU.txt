@@ -1,1 +1,1 @@
-V4.0.3: Kolay/Gelişmiş mod seçimi kaldırıldı. Tüm menüler her zaman görünür. Veri yapısı ve hesaplamalar değiştirilmedi.
+V4.0.4: Ana, Tarlalar, Giderler, İşlemler, Gelirler, Raporlar. Depo ana sayfada özet ve Giderler > Girdi alımı altında erişilebilir. Eski formlar, kayıtlar ve hesaplamalar korunmuştur. Tek kayıtla yeni otomatik muhasebe bağlantısı eklenmemiştir.
