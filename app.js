@@ -27,13 +27,13 @@ const lots=buys.filter(m=>m.date<=x.date).sort((a,b)=>a.date.localeCompare(b.dat
 for(const m of used.filter(m=>m.date<=x.date).sort((a,b)=>a.date.localeCompare(b.date)||Number(a.source_id||0)-Number(b.source_id||0)||String(a.id).localeCompare(String(b.id)))){let q=Number(m.quantity);for(const lot of lots){const take=Math.min(q,lot.left);lot.left-=take;q-=take;if(q<=1e-8)break}if(q>1e-8)throw Error('Önceki kullanım alış tarihinden önce. FIFO hesaplanamadı')}
 let need=x.quantity, fifoCost=0;for(const lot of lots){const take=Math.min(need,lot.left);fifoCost+=take*lot.price;need-=take;if(need<=1e-8)break}if(need>1e-8)throw Error('İşlem tarihinde yeterli stok yok');const unitCost=fifoCost/x.quantity;const total=Math.round(x.quantity*unitCost*100)/100;const id=crypto.randomUUID();const movement={id,kind:'use',input_id:x.input_id,date:x.date,quantity:x.quantity,unit_price:unitCost,total,parcel_code:x.parcel_code,area_da:x.area_da,per_da:x.per_da};const operation={id:crypto.randomUUID(),op_date:x.date,season:x.season,parcel_code:x.parcel_code,op_type:'Girdi kullanımı',item:input.name,quantity:x.quantity,unit:input.unit,unit_price:unitCost,amount:total,direction:'Gider',stock_move_id:id,area_da:x.area_da,per_da:x.per_da};movement.source_operation_id=operation.id;await tx(['stockMoves','operations'],'readwrite',t=>{t.objectStore('stockMoves').add(movement);t.objectStore('operations').add(operation)});e.target.reset();$('useForm').elements.date.value=localDate();await render()}catch(err){alert(err.message)}};
 for(const b of document.querySelectorAll('[data-tab]'))b.onclick=()=>{for(const p of document.querySelectorAll('.panel'))p.hidden=p.id!==b.dataset.tab;for(const n of document.querySelectorAll('[data-tab]'))n.classList.toggle('selected',n===b)};
-// V5.3.2: iPhone-safe backup export. Never modifies IndexedDB.
+// V5.3.3: iPhone-safe backup export. Never modifies IndexedDB.
 let lastBackupUrl=null;
 $('export').onclick=async()=>{
  const status=$('status'),button=$('export'); button.disabled=true;
  status.textContent='Yedek hazırlanıyor…';
  try{
-  const data={format:'ozcan-mobile-test-v3',exportedAt:new Date().toISOString(),appVersion:'5.3.2'};
+  const data={format:'ozcan-mobile-test-v3',exportedAt:new Date().toISOString(),appVersion:'5.3.3'};
   for(const store of stores)data[store]=await all(store);
   const json=JSON.stringify(data,null,2);
   const check=JSON.parse(json);

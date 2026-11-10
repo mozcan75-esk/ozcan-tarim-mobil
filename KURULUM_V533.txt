@@ -1,0 +1,7 @@
+Özcan Tarım Mobil V5.3.3 – Yedekleme tanılama ve düzeltme
+
+ZIP içindeki uygulama dosyalarını GitHub Pages deposunda index.html ile aynı klasöre yükleyin ve commit edin.
+Telefondaki uygulamayı silmeyin, Safari site verilerini temizlemeyin.
+Yedek ve Ayarlar ekranında önce “Yedekleme modülü hazır” yazısını, sonra düğmeye basınca “Yedekleme başladı” mesajını kontrol edin.
+Başarılıysa JSON bağlantısına dokunup Dosyalar’a kaydedin.
+Bu düzeltme IndexedDB üzerinde sadece okuma yapar; mevcut kayıtları değiştirmez.
